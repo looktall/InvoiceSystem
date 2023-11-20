@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <title>Side Panel Menu</title>
+    <style>
+        body {
+            padding-top: 56px; /* Adjust the top padding to match the height of the fixed navbar */
+        }
+
+        .side-panel {
+            position: fixed;
+            top: 56px;
+            left: 0;
+            width: 15%;
+            height: 100%;
+            background-color: #a3a3a3;
+            padding-top: 10px;
+        }
+
+        .side-panel a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #000000;
+            display: block;
+        }
+
+        .side-panel a:hover {
+            background-color: #d1d1d1;
+        }
+
+        .center-box {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            height: 100vh; /* 100% of the viewport height */
+            margin-left: 15%; /* Adjusted to match the width of the side panel */
+            max-width: 85%;
+        }
+
+        .center-content {
+            width: 100%; /* Ensure content takes full width */
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <a class="navbar-brand" href="#">Your Logo</a>
+        <!-- Add a button to toggle the side panel -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Display username and logout link -->
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <span class="navbar-text">
+                        Welcome, <strong>Username</strong>
+                    </span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Side Panel -->
+    <div class="side-panel">
+        <a href="#">Overview</a>
+        <a href="#" onclick="showVendor()">Vendor</a>
+        <a href="#">Invoice</a>
+        <a href="#">Setting</a>
+    </div>
+
+    <!-- Centered Content Box -->
+    <div id="mainContent" class="container-fluid center-box">
+        <div class="center-content">
+            <!-- JavaScript will populate content here -->
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript and dependencies (jQuery, Popper.js) -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+    <script>
+        const token = localStorage.getItem('token');
+        if (token)
+        {
+            var decoded_token = jwt_decode(token);
+
+            if (decoded_token.exp < Math.floor(Date.now()/1000))
+            {
+                window.stop();
+                localStorage.removeItem("token");
+                window.location.href = 'login.html';
+            }
+        }
+
+        function showVendor() {
+            const mainContent = document.querySelector('.center-content');
+
+            axios.get("https://invoice-system-api.onrender.com/vendor/get/",
+            {headers: { authorization: `Bearer ${token}` }})
+                .then(response => {
+                    
+                    var data =
+                    `
+                        <div class="row">
+                            <div class="col">
+                                <table class="table table-hover table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="text" class="form-control" placeholder="ID"></th>
+                                            <th><input type="text" class="form-control" placeholder="Name"></th>
+                                            <th><input type="text" class="form-control" placeholder="Amount"></th>
+                                            <th><button type="button" class="btn btn-success">Create</i></button></th>
+                                        </tr>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Amount</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                    `;
+
+                    for(i = 0; i < response.data; i++)
+                    {
+                        data += `
+                            <tr>
+                                <td>1</td>
+                                <td>Vendor 1</td>
+                                <td>$100.00</td>
+                                <td><button type="button" class="btn btn-success"><i class="fa-solid fa-pen-to-square"></i></button> <button type="button" class="btn btn-danger"><i class="fa-solid fa-trash"></i></button></td>
+                            </tr>
+                        `
+                    }
+
+                    data += `
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+
+                            </div>
+                        </div>
+                    `;
+
+                })
+                .catch(error => {
+                    console.log(error);
+            });
+            
+            mainContent.innerHTML = data;
+        }
+
+        // // Example: Call showTable when the page loads
+        // window.onload = function () {
+        //     showVendor();
+        // };
+    </script>
+
+</body>
+
+</html>
