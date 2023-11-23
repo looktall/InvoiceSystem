@@ -77,10 +77,20 @@
 
     <!-- Side Panel -->
     <div class="side-panel">
-        <a href="#">Overview</a>
-        <a href="#" onclick="showVendor()">Vendor</a>
-        <a href="#">Invoice</a>
-        <a href="#">Setting</a>
+        <ul class="nav nav-pills nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#">Overview</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" onclick="showVendor()">Vendor</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" onclick="showInvoice()">Invoice</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Setting</a>
+            </li>
+        </ul>
     </div>
 
     <!-- Centered Content Box -->
