@@ -79,7 +79,7 @@
     <div class="side-panel">
         <ul class="nav nav-pills nav flex-column">
             <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Overview</a>
+                <a class="nav-link active" aria-current="page" href="#" onclick="showOverall()">Overview</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#" onclick="showVendor()">Vendor</a>
@@ -104,20 +104,48 @@
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    
     <script>
         const token = localStorage.getItem('token');
         if (token)
         {
             var decoded_token = jwt_decode(token);
             document.getElementById("username").innerHTML = decoded_token.username;
-            
+
             if (decoded_token.exp < Math.floor(Date.now()/1000))
             {
                 window.stop();
                 localStorage.removeItem("token");
                 window.location.href = 'login.html';
             }
+        }
+
+        function showOverall() {
+            const mainContent = document.querySelector('.center-content');
+
+            var data = `
+                <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+            `
+
+            mainContent.innerHTML = data;
+
+            new Chart("myChart", {
+            type: "pie",
+            data: {
+                labels: xValues,
+                datasets: [{
+                backgroundColor: barColors,
+                data: yValues
+                }]
+            },
+            options: {
+                title: {
+                display: true,
+                text: "World Wide Wine Production"
+                }
+            }
+            });
         }
 
         function showVendor() {
@@ -181,10 +209,71 @@
             mainContent.innerHTML = data;
         }
 
-        // // Example: Call showTable when the page loads
-        // window.onload = function () {
-        //     showVendor();
-        // };
+        function showInvoice() {
+            const mainContent = document.querySelector('.center-content');
+
+            axios.get("https://invoice-system-api.onrender.com/invoice/get/",
+            {headers: { authorization: `Bearer ${token}` }})
+                .then(response => {
+                    
+                    var data =
+                    `
+                        <div class="row">
+                            <div class="col">
+                                <table class="table table-hover table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="text" class="form-control" placeholder="ID"></th>
+                                            <th><input type="text" class="form-control" placeholder="Name"></th>
+                                            <th><input type="text" class="form-control" placeholder="Amount"></th>
+                                            <th><button type="button" class="btn btn-success">Create</i></button></th>
+                                        </tr>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Amount</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                    `;
+
+                    for(i = 0; i < response.data; i++)
+                    {
+                        data += `
+                            <tr>
+                                <td>1</td>
+                                <td>Vendor 1</td>
+                                <td>$100.00</td>
+                                <td><button type="button" class="btn btn-success"><i class="fa-solid fa-pen-to-square"></i></button> <button type="button" class="btn btn-danger"><i class="fa-solid fa-trash"></i></button></td>
+                            </tr>
+                        `
+                    }
+
+                    data += `
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+
+                            </div>
+                        </div>
+                    `;
+
+                })
+                .catch(error => {
+                    console.log(error);
+            });
+            
+            mainContent.innerHTML = data;
+        }
+
+        // Example: Call showTable when the page loads
+        window.onload = function () {
+            showOverall();
+        };
     </script>
 
 </body>
