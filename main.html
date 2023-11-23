@@ -6,7 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <title>Side Panel Menu</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
+    <title>Invoice System</title>
     <style>
         body {
             padding-top: 56px; /* Adjust the top padding to match the height of the fixed navbar */
@@ -93,6 +100,37 @@
         </ul>
     </div>
 
+     <!-- Modal -->
+    <div id="vendor-modal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <p id="vendor-modal-message"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" onclick="hideModal()">Discard</button>
+                    <button type="button" class="btn btn-success" onclick="">Create</button>
+                </div>
+          </div>
+        </div>
+    </div>
+
+    <div id="invoice-modal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <p id="invoice-modal-message"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" onclick="hideModal()">Discard</button>
+                    <button type="button" class="btn btn-success" onclick="">Create</button>
+                </div>
+          </div>
+        </div>
+    </div>
+
+
+
     <!-- Centered Content Box -->
     <div id="mainContent" class="container-fluid center-box">
         <div class="center-content">
@@ -100,14 +138,15 @@
         </div>
     </div>
 
-    <!-- Bootstrap JavaScript and dependencies (jQuery, Popper.js) -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-    
     <script>
         const token = localStorage.getItem('token');
+
+        const vendorModal = document.getElementById('vendor-modal');
+        const vendorModalMessage = document.getElementById('vendor-modal-message');
+
+        const invoiceModal = document.getElementById('invoice-modal');
+        const invoiceModalMessage = document.getElementById('invoice-modal-message');
+
         if (token)
         {
             var decoded_token = jwt_decode(token);
@@ -119,6 +158,50 @@
                 localStorage.removeItem("token");
                 window.location.href = 'login.html';
             }
+        }
+
+        function showVendorModal() {
+
+            var content = '<table class="table table-sm table-borderless">';
+            content += '<tr><td>Vendor Name : </td><td><input id="vendorName" required class="form-control" type="text" onchange="CheckNull()"/></td></tr>';
+            content += '<tr><td>Company Name : </td><td><input id="companyName" required class="form-control" type="text" onchange="CheckNull()"/></td></tr>';
+            content += '<tr><td>Address : </td><td><textarea id="address" class="form-control" style="height:150px"></textarea></td></tr>';
+            content += '<tr><td>Email : </td><td><input id="email" required class="form-control" type="text" onchange="CheckNull()"/></td></tr>';
+            content += '<tr><td>Contact No : </td><td><input id="contactNo" required class="form-control" type="text" onchange="CheckNull()"/></td></tr>';
+            content += '</table>';
+
+            vendorModalMessage.innerHTML = content;
+            vendorModal.style.display = 'block';
+        }
+
+        function showInvoiceModal() {
+
+            var content = '<table class="table table-sm table-borderless">';
+            // Recipient
+            content += '<tr><td>Recipient : </td><td><input id="recipient" required class="form-control" type="text" onchange="CheckNull()"/></td></tr>';
+            // Item List
+            content += '<tr><td>Item List : </td><td>';
+            content += '<table class="item-table" id="itemTable">';
+            content += '<tr><th>Item</th><th>Quantity</th><th>Unit Price</th><th>Action</th></tr>';
+            content += '<tr>';
+            content += '<td><input class="form-control" type="text" name="item[]" /></td>';
+            content += '<td><input class="form-control" type="number" name="quantity[]" /></td>';
+            content += '<td><input class="form-control" type="number" name="unitPrice[]" /></td>';
+            content += '<td><button type="button" onclick="addRow()">Add</button></td>';
+            content += '</tr>';
+            content += '</table>';
+            content += '</td></tr>';
+            // Total
+            content += '<tr><td>Total : </td><td><input id="total" readonly class="form-control" type="text"/></td></tr>';
+            content += '</table>';
+
+            invoiceModalMessage.innerHTML = content;
+            invoiceModal.style.display = 'block';
+        }
+
+        function hideModal() {
+            vendorModal.style.display = 'none';
+            invoiceModal.style.display = 'none';
         }
 
         function showOverall() {
@@ -270,12 +353,34 @@
             mainContent.innerHTML = data;
         }
 
+        function addRow() {
+            var table = document.getElementById("itemTable");
+            var newRow = table.insertRow(table.rows.length - 1);
+
+            var cells = [];
+            for (var i = 0; i < 3; i++) {
+                var cell = newRow.insertCell(i);
+                var input = document.createElement("input");
+                input.className = "form-control";
+                input.type = (i === 1 || i === 2) ? "number" : "text";
+                input.name = i === 0 ? "item[]" : i === 1 ? "quantity[]" : "unitPrice[]";
+                cell.appendChild(input);
+                cells.push(cell);
+            }
+
+            var actionCell = newRow.insertCell(3);
+            var removeButton = document.createElement("button");
+            removeButton.type = "button";
+            removeButton.innerHTML = "Remove";
+            removeButton.onclick = function () {
+                table.deleteRow(newRow.rowIndex);
+            };
+            actionCell.appendChild(removeButton);
+        }
         // Example: Call showTable when the page loads
         window.onload = function () {
             showOverall();
         };
     </script>
-
 </body>
-
 </html>
