@@ -213,22 +213,24 @@
             `
 
             mainContent.innerHTML = data;
-
+            
             new Chart("myChart", {
-            type: "pie",
-            data: {
-                labels: xValues,
+                type: 'bar',
+                data: {
+                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
                 datasets: [{
-                backgroundColor: barColors,
-                data: yValues
+                    label: '# of Votes',
+                    data: [12, 19, 3, 5, 2, 3],
+                    borderWidth: 1
                 }]
-            },
-            options: {
-                title: {
-                display: true,
-                text: "World Wide Wine Production"
+                },
+                options: {
+                scales: {
+                    y: {
+                    beginAtZero: true
+                    }
                 }
-            }
+                }
             });
         }
 
