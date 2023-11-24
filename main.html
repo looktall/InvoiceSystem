@@ -234,12 +234,14 @@
 
         function showVendor() {
             const mainContent = document.querySelector('.center-content');
+            
+            var data = "";
 
             axios.get("https://invoice-system-api.onrender.com/vendor/get/",
             {headers: { authorization: `Bearer ${token}` }})
                 .then(response => {
                     
-                    var data =
+                    data =
                     `
                         <div class="row">
                             <div class="col">
@@ -296,11 +298,13 @@
         function showInvoice() {
             const mainContent = document.querySelector('.center-content');
 
+            var data = "";
+
             axios.get("https://invoice-system-api.onrender.com/invoice/get/",
             {headers: { authorization: `Bearer ${token}` }})
                 .then(response => {
                     
-                    var data =
+                    data =
                     `
                         <div class="row">
                             <div class="col">
