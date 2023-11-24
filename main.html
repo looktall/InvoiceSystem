@@ -87,7 +87,7 @@
     <div class="side-panel">
         <ul class="nav nav-pills nav flex-column">
             <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#" onclick="showOverall()">Overview</a>
+                <a class="nav-link active" aria-current="page" href="#" onclick="showOverview()">Overview</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#" onclick="showVendor()">Vendor</a>
@@ -129,8 +129,6 @@
           </div>
         </div>
     </div>
-
-
 
     <!-- Centered Content Box -->
     <div id="mainContent" class="container-fluid center-box">
@@ -205,17 +203,37 @@
             invoiceModal.style.display = 'none';
         }
 
-        function showOverall() {
+        function showOverview() {
             const mainContent = document.querySelector('.center-content');
 
             var data = `
-                <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+                <canvas id="barChart" style="width:100%;max-width:700px"></canvas>
+                <canvas id="pieChart" style="width:100%;max-width:700px"></canvas>
             `
 
             mainContent.innerHTML = data;
             
-            new Chart("myChart", {
+            new Chart("barChart", {
                 type: 'bar',
+                data: {
+                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                datasets: [{
+                    label: '# of Votes',
+                    data: [12, 19, 3, 5, 2, 3],
+                    borderWidth: 1
+                }]
+                },
+                options: {
+                scales: {
+                    y: {
+                    beginAtZero: true
+                    }
+                }
+                }
+            });
+
+            new Chart("pieChart", {
+                type: 'pie',
                 data: {
                 labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
                 datasets: [{
@@ -384,9 +402,10 @@
             };
             actionCell.appendChild(removeButton);
         }
+
         // Example: Call showTable when the page loads
         window.onload = function () {
-            showOverall();
+            showOverview();
         };
     </script>
 </body>

@@ -120,36 +120,6 @@
             showModal(error.response.data)
         });
     });
-
-    registerButton.addEventListener("click", () => {
-      const username = document.getElementById("sign-up-username").value;
-      const password = document.getElementById("sign-up-password").value;
-      const confirmPassword = document.getElementById("confirm-password").value;
-      
-      registerButton.innerHTML = '<i class="fa fa-spinner fa-spin"></i>';
-
-        if(password == confirmPassword)
-        {
-          axios.post("https://gameportalapi.onrender.com/user/create", {
-            username: username,
-            password: password
-          },
-          {
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Content-Type': 'application/json',
-          }})
-          .then(response => {
-              showModal(response.data)
-              setInterval(()=>{window.location.href = 'login.html';}, 2000);
-          })
-          .catch(error => {
-              console.log(error.response.data);
-              showModal(error.response.data)
-          });
-        }
-    });
-
   </script>
 </body>
 </html>
