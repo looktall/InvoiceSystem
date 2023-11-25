@@ -12,7 +12,7 @@
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <title>Invoice System</title>
     <style>
@@ -220,6 +220,14 @@
                 datasets: [{
                     label: '# of Votes',
                     data: [12, 19, 3, 5, 2, 3],
+                    backgroundColor: [
+                        'rgb(255, 51, 51)',
+                        'rgb(0, 128, 255)',
+                        'rgb(255, 225, 51)',
+                        'rgb(102, 204, 0)',
+                        'rgb(102, 0, 204)',
+                        'rgb(255, 128, 0)',
+                    ],
                     borderWidth: 1
                 }]
                 },
@@ -239,6 +247,15 @@
                 datasets: [{
                     label: '# of Votes',
                     data: [12, 19, 3, 5, 2, 3],
+                    backgroundColor: [
+                        'rgb(255, 51, 51)',
+                        'rgb(0, 128, 255)',
+                        'rgb(255, 225, 51)',
+                        'rgb(102, 204, 0)',
+                        'rgb(102, 0, 204)',
+                        'rgb(255, 128, 0)',
+                    ],
+                    hoverOffset: 4,
                     borderWidth: 1
                 }]
                 },
