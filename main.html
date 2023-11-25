@@ -276,57 +276,52 @@
 
             axios.get("https://invoice-system-api.onrender.com/vendor/get/",
             {headers: { authorization: `Bearer ${token}` }})
-                .then(response => {
-                    
-                    data =
-                    `
-                        <div class="row">
-                            <div class="col">
-                                <table class="table table-hover table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th><input type="text" class="form-control" placeholder="ID"></th>
-                                            <th><input type="text" class="form-control" placeholder="Name"></th>
-                                            <th><input type="text" class="form-control" placeholder="Amount"></th>
-                                            <th><button type="button" class="btn btn-success">Create</i></button></th>
-                                        </tr>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Name</th>
-                                            <th>Amount</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                    `;
+            .then(response => {
 
-                    for(i = 0; i < response.data; i++)
-                    {
-                        data += `
-                            <tr>
-                                <td>1</td>
-                                <td>Vendor 1</td>
-                                <td>$100.00</td>
-                                <td><button type="button" class="btn btn-success"><i class="fa-solid fa-pen-to-square"></i></button> <button type="button" class="btn btn-danger"><i class="fa-solid fa-trash"></i></button></td>
-                            </tr>
-                        `
-                    }
+                data += `<div class="row">`;
+                data += `<div class="col">`;
+                data += `<table class="table table-hover table-sm">`;
+                data += `<thead>`;
+                data += `<tr>`;
+                data += `<th><input type="text" class="form-control" placeholder="ID"></th>`;
+                data += `<th><input type="text" class="form-control" placeholder="Name"></th>`;
+                data += `<th><input type="text" class="form-control" placeholder="Amount"></th>`;
+                data += `<th><button type="button" class="btn btn-success">Create</i></button></th>`;
+                data += `</tr>`;
 
+                data += `<tr>`;
+                data += `<th>ID</th>`;
+                data += `<th>Name</th>`;
+                data += `<th>Amount</th>`;
+                data += `<th>Action</th>`;
+                data += `</tr>`;
+                data += `</thead>`;
+                data += `<tbody>`;
+                
+
+                for(i = 0; i < response.data; i++)
+                {
                     data += `
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
+                        <tr>
+                            <td>1</td>
+                            <td>Vendor 1</td>
+                            <td>$100.00</td>
+                            <td><button type="button" class="btn btn-success"><i class="fa-solid fa-pen-to-square"></i></button> <button type="button" class="btn btn-danger"><i class="fa-solid fa-trash"></i></button></td>
+                        </tr>
+                    `
+                }
 
-                            </div>
-                        </div>
-                    `;
-
-                })
-                .catch(error => {
-                    console.log(error);
+                data += `</tbody>`;
+                data += `</table>`;
+                data += `</div>`;
+                data += `</div>`;
+                data += `<div class="row">`;
+                data += `<div class="col">`;
+                data += `</div>`;
+                data += `</div>`;
+            })
+            .catch(error => {
+                console.log(error);
             });
             
             mainContent.innerHTML = data;
@@ -341,51 +336,7 @@
             {headers: { authorization: `Bearer ${token}` }})
                 .then(response => {
                     
-                    data =
-                    `
-                        <div class="row">
-                            <div class="col">
-                                <table class="table table-hover table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th><input type="text" class="form-control" placeholder="ID"></th>
-                                            <th><input type="text" class="form-control" placeholder="Name"></th>
-                                            <th><input type="text" class="form-control" placeholder="Amount"></th>
-                                            <th><button type="button" class="btn btn-success">Create</i></button></th>
-                                        </tr>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Name</th>
-                                            <th>Amount</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                    `;
-
-                    for(i = 0; i < response.data; i++)
-                    {
-                        data += `
-                            <tr>
-                                <td>1</td>
-                                <td>Vendor 1</td>
-                                <td>$100.00</td>
-                                <td><button type="button" class="btn btn-success"><i class="fa-solid fa-pen-to-square"></i></button> <button type="button" class="btn btn-danger"><i class="fa-solid fa-trash"></i></button></td>
-                            </tr>
-                        `
-                    }
-
-                    data += `
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-
-                            </div>
-                        </div>
-                    `;
+                    
 
                 })
                 .catch(error => {
