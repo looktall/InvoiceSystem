@@ -26,7 +26,7 @@
             left: 0;
             width: 15%;
             height: 100%;
-            background-color: #a3a3a3;
+            background-color: #98c1ff;
             padding-top: 10px;
         }
 
@@ -39,7 +39,7 @@
         }
 
         .side-panel a:hover {
-            background-color: #d1d1d1;
+            background-color: #49c5ff;
         }
 
         .center-box {
@@ -207,8 +207,12 @@
             const mainContent = document.querySelector('.center-content');
 
             var data = `
-                <canvas id="barChart" style="width:100%;max-width:700px"></canvas>
-                <canvas id="pieChart" style="width:100%;max-width:700px"></canvas>
+                <table class="table table-sm table-borderless">
+                <tr>
+                    <td><canvas id="barChart" style="width:100%;max-width:35%"></canvas></td>
+                    <td><canvas id="pieChart" style="width:100%;max-width:35%"></canvas></td>
+                </tr>
+                </table>
             `
 
             mainContent.innerHTML = data;
