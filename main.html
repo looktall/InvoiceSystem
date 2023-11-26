@@ -402,7 +402,11 @@
         window.onload = function () {
 
             const urlParams = new URLSearchParams(window.location.search);
-            updateNavBar(urlParams.get('content'));
+
+            if(urlParams.has('content'))
+                updateNavBar(urlParams.get('content'));
+            else
+                updateNavBar("nav-overview");
 
         }
     </script>
