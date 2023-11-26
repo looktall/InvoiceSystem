@@ -161,12 +161,12 @@
 
         function updateNavBar(id)
         {
-            getElementById("nav-overview").classList.remove("active");
-            getElementById("nav-vendor").classList.remove("active");
-            getElementById("nav-invoice").classList.remove("active");
-            getElementById("nav-setting").classList.remove("active");
+            document.getElementById("nav-overview").classList.remove("active");
+            document.getElementById("nav-vendor").classList.remove("active");
+            document.getElementById("nav-invoice").classList.remove("active");
+            document.getElementById("nav-setting").classList.remove("active");
 
-            getElementById(id).classList.remove("active");
+            document.getElementById(id).classList.remove("active");
         }
 
         function showVendorModal() {
@@ -403,7 +403,7 @@
 
             const urlParams = new URLSearchParams(window.location.search);
             updateNavBar(urlParams.get('content'));
-              
+
         }
     </script>
 </body>
