@@ -87,16 +87,16 @@
     <div class="side-panel">
         <ul class="nav nav-pills nav flex-column">
             <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#" onclick="showOverview()">Overview</a>
+                <a id="nav-overview" class="nav-link active" aria-current="page" href="#" onclick="showOverview()">Overview</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#" onclick="showVendor()">Vendor</a>
+                <a id="nav-vendor" class="nav-link" href="#" onclick="showVendor()">Vendor</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#" onclick="showInvoice()">Invoice</a>
+                <a id="nav-invoice" class="nav-link" href="#" onclick="showInvoice()">Invoice</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#" tabindex="-1" aria-disabled="true">Setting</a>
+                <a id="nav-setting" class="nav-link" href="#" tabindex="-1" aria-disabled="true">Setting</a>
             </li>
         </ul>
     </div>
@@ -159,7 +159,19 @@
             }
         }
 
+        function updateNavBar(id)
+        {
+            getElementById("nav-overview").classList.remove("active");
+            getElementById("nav-vendor").classList.remove("active");
+            getElementById("nav-invoice").classList.remove("active");
+            getElementById("nav-setting").classList.remove("active");
+
+            getElementById(id).classList.remove("active");
+        }
+
         function showVendorModal() {
+
+            updateNavBar("nav-vendor");
 
             var content = '<table class="table table-sm table-borderless">';
             content += '<tr><td>Vendor Name : </td><td><input id="vendorName" required class="form-control" type="text" onchange="CheckNull()"/></td></tr>';
@@ -174,6 +186,8 @@
         }
 
         function showInvoiceModal() {
+
+            updateNavBar("nav-invoice");
 
             var content = '<table class="table table-sm table-borderless">';
             // Recipient
@@ -204,6 +218,9 @@
         }
 
         function showOverview() {
+
+            updateNavBar("nav-overview");
+
             const mainContent = document.querySelector('.center-content');
 
             var data = `
@@ -274,6 +291,9 @@
         }
 
         function showVendor() {
+
+            updateNavBar("nav-vendor");
+
             const mainContent = document.querySelector('.center-content');
             
             var data = "";
@@ -332,6 +352,9 @@
         }
 
         function showInvoice() {
+
+            updateNavBar("nav-invoice");
+
             const mainContent = document.querySelector('.center-content');
 
             var data = "";
@@ -377,8 +400,11 @@
 
         // Example: Call showTable when the page loads
         window.onload = function () {
-            showOverview();
-        };
+
+            const urlParams = new URLSearchParams(window.location.search);
+            updateNavBar(urlParams.get('content'));
+              
+        }
     </script>
 </body>
 </html>
