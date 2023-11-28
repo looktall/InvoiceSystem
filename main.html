@@ -288,7 +288,7 @@
 
         function showVendor() {
 
-            //updateNavBar("nav-vendor");
+            updateNavBar("nav-vendor");
 
             const mainContent = document.querySelector('.center-content');
             
@@ -319,7 +319,7 @@
                 data += `<tbody>`;
                 
 
-                for(i = 0; i < response.data; i++)
+                for(i = 0; i < response.data.length; i++)
                 {
                     data += `
                         <tr>
@@ -395,16 +395,15 @@
         }
 
         // Example: Call showTable when the page loads
-        window.onload = function () {
+        // window.onload = function () {
 
-            const urlParams = new URLSearchParams(window.location.search);
+        //     const urlParams = new URLSearchParams(window.location.search);
 
-            if(urlParams.has('content'))
-                updateNavBar(urlParams.get('content'));
-            else
-                updateNavBar("nav-overview");
-
-        }
+        //     if(urlParams.has('content'))
+        //         updateNavBar(urlParams.get('content'));
+        //     else
+        //         updateNavBar("nav-overview");
+        // }
     </script>
 </body>
 </html>
