@@ -219,7 +219,7 @@
 
         function showOverview() {
 
-            updateNavBar("nav-overview");
+            //updateNavBar("nav-overview");
 
             const mainContent = document.querySelector('.center-content');
 
@@ -288,7 +288,7 @@
 
         function showVendor() {
 
-            updateNavBar("nav-vendor");
+            //updateNavBar("nav-vendor");
 
             const mainContent = document.querySelector('.center-content');
             
@@ -349,7 +349,7 @@
 
         function showInvoice() {
 
-            updateNavBar("nav-invoice");
+            //updateNavBar("nav-invoice");
 
             const mainContent = document.querySelector('.center-content');
 
@@ -359,7 +359,34 @@
             {headers: { authorization: `Bearer ${token}` }})
                 .then(response => {
                     
-                    
+                    data += `<div class="row">`;
+                    data += `<div class="col">`;
+                    data += `<table class="table table-hover table-sm">`;
+                    data += `<thead>`;
+                    data += `<tr>`;
+                    data += `<th><input type="text" class="form-control" placeholder="ID"></th>`;
+                    data += `<th><input type="text" class="form-control" placeholder="Name"></th>`;
+                    data += `<th><input type="text" class="form-control" placeholder="Amount"></th>`;
+                    data += `<th><button type="button" class="btn btn-success">Create</i></button></th>`;
+                    data += `</tr>`;
+
+                    data += `<tr>`;
+                    data += `<th>ID</th>`;
+                    data += `<th>Name</th>`;
+                    data += `<th>Amount</th>`;
+                    data += `<th>Action</th>`;
+                    data += `</tr>`;
+                    data += `</thead>`;
+                    data += `<tbody>`;
+
+                    data += `</tbody>`;
+                    data += `</table>`;
+                    data += `</div>`;
+                    data += `</div>`;
+                    data += `<div class="row">`;
+                    data += `<div class="col">`;
+                    data += `</div>`;
+                    data += `</div>`;
 
                 })
                 .catch(error => {
