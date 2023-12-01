@@ -62,6 +62,17 @@
             font-weight: bold;
         }
 
+        td
+        {
+            vertical-align: middle;
+        }
+
+        .badge
+        {
+            padding-top:5px;
+            padding-bottom: 5px;
+        }
+
         .item-table {
             width: 100%;
             border-collapse: collapse;
@@ -256,7 +267,7 @@
                 content += `<tr>`;
                 content += `<table class="item-table" id="itemTable">`;
                 content += `<tr><th>Item</th><th>Quantity</th><th>Unit Price</th><th>Subtotal</th><th>Action</th></tr>`;
-                content += `<tr><td colspan="5"><div class="d-grid gap-2"><button class="btn btn-success" type="button" onclick="addRow()"><i class="fa-solid fa-plus"></i> Add Row</button></div></td></tr>`;
+                content += `<tr><td colspan="5"><div class="d-grid gap-2"><button class="btn btn-outline-success" type="button" onclick="addRow()"><i class="fa-solid fa-plus"></i> Add Row</button></div></td></tr>`;
                 content += `</table>`;
                 content += `</td></tr>`;
                 content += `<tr><td>Total : </td><td><input id="total" readonly class="form-control" type="text"/></td></tr>`;
@@ -299,6 +310,42 @@
                             </tr>`;
                 content += `</table>`;
 
+                content += '<br><br>';
+                content += `<h5">Invoices from same vendor</h5>`;
+                content += `<div style="height: 100px; overflow-y: auto; margin-top: 10px;">`;
+
+                content += `<div style="display: flex; justify-content: space-between; margin-bottom: 5px;">`;
+                content += `<button class="btn btn-outline-info" onclick="" style="width: 30%;">Invoice 1</button>`;
+                content += `<span style="width: 30%;">Status: Sent</span>`;
+                content += `<span style="width: 30%;">Issue Date: 2023-12-31</span>`;
+                content += `</div>`;
+
+                content += `<div style="display: flex; justify-content: space-between; margin-bottom: 5px;">`;
+                content += `<button class="btn btn-outline-success" onclick="" style="width: 30%;">Invoice 2</button>`;
+                content += `<span style="width: 30%;">Status: Verified</span>`;
+                content += `<span style="width: 30%;">Issue Date: 2023-12-15</span>`;
+                content += `</div>`;
+
+                content += `<div style="display: flex; justify-content: space-between; margin-bottom: 5px;">`;
+                content += `<button class="btn btn-outline-success" onclick="" style="width: 30%;">Invoice 2</button>`;
+                content += `<span style="width: 30%;">Status: Verified</span>`;
+                content += `<span style="width: 30%;">Issue Date: 2023-12-15</span>`;
+                content += `</div>`;
+
+                content += `<div style="display: flex; justify-content: space-between; margin-bottom: 5px;">`;
+                content += `<button class="btn btn-outline-success" onclick="" style="width: 30%;">Invoice 2</button>`;
+                content += `<span style="width: 30%;">Status: Verified</span>`;
+                content += `<span style="width: 30%;">Issue Date: 2023-12-15</span>`;
+                content += `</div>`;
+
+                content += `<div style="display: flex; justify-content: space-between; margin-bottom: 5px;">`;
+                content += `<button class="btn btn-outline-success" onclick="" style="width: 30%;">Invoice 2</button>`;
+                content += `<span style="width: 30%;">Status: Verified</span>`;
+                content += `<span style="width: 30%;">Issue Date: 2023-12-15</span>`;
+                content += `</div>`;
+
+                content += `</div>`;
+
                 editVendorModalMessage.innerHTML = content;
                 editVendorModal.style.display = 'block'; 
             });
@@ -312,7 +359,7 @@
             content += `<tr>`;
             content += `<table class="item-table" id="itemTable">`;
             content += `<tr><th>Item</th><th>Quantity</th><th>Unit Price</th><th>Subtotal</th><th>Action</th></tr>`;
-            content += `<tr><td colspan="5"><div class="d-grid gap-2"><button class="btn btn-success" type="button" onclick="addRow()"><i class="fa-solid fa-plus"></i> Add Row</button></div></td></tr>`;
+            content += `<tr><td colspan="5"><div class="d-grid gap-2"><button class="btn btn-outline-success" type="button" onclick="addRow()"><i class="fa-solid fa-plus"></i> Add Row</button></div></td></tr>`;
             content += `</table>`;
             content += `</td></tr>`;
             content += `<tr><td>Total : </td><td><input id="total" readonly class="form-control" type="text"/></td></tr>`;
@@ -395,18 +442,20 @@
 
                 content += `<div class="row">`;
                 content += `<div class="col">`;
-                content += `<table class="table table-hover table-sm">`;
-                content += `<thead>`;
+                content += `<table id="vendorTable" class="table table-hover table-sm">`;
+                content += `<thead class="table-light">`;
                 content += `<tr>`;
                 content += `<th><input type="text" class="form-control" placeholder="ID"></th>`;
-                content += `<th><input type="text" class="form-control" placeholder="Name"></th>`;
-                content += `<th><div class="d-grid gap-2"><button type="button" class="btn btn-success" onclick="showCreateVendor()">Create</i></button></div></th>`;
+                content += `<th><input type="text" class="form-control" placeholder="Vendor Name"></th>`;
+                content += `<th><input type="text" class="form-control" placeholder="Company Name"></th>`;
+                content += `<th><div class="d-grid gap-2"><button type="button" class="btn btn-outline-success" onclick="showCreateVendor()">Create New Vendor</i></button></div></th>`;
                 content += `</tr>`;
 
                 content += `<tr>`;
-                content += `<th>ID</th>`;
-                content += `<th>Name</th>`;
-                content += `<th>Action</th>`;
+                content += `<th onclick="sortTable(0, 'vendorTable')">ID</div></th>`;
+                content += `<th onclick="sortTable(1, 'vendorTable')">Vendor Name</th>`;
+                content += `<th onclick="sortTable(2, 'vendorTable')">Company Name</th>`;
+                content += `<th >Action</th>`;
                 content += `</tr>`;
                 content += `</thead>`;
                 content += `<tbody>`;
@@ -416,8 +465,9 @@
                 {
                     content += `
                         <tr>
-                            <td>1</td>
-                            <td>Vendor 1</td>
+                            <td>`+response.data.items[i].id+`</td>
+                            <td>`+response.data.items[i].vendor_name+`</td>
+                            <td>`+response.data.items[i].company_name+`</td>
                             <td>
                                 <button type="button" onclick="showEditVendor(`+response.data.items[i].id+`)" class="btn btn-success">
                                     <i class="fa-solid fa-pen-to-square"></i>
@@ -463,28 +513,30 @@
                     
                     content += `<div class="row">`;
                     content += `<div class="col">`;
-                    content += `<table class="table table-hover table-sm">`;
-                    content += `<thead>`;
+                    content += `<table id="invoiceTable" class="table table-hover table-sm">`;
+                    content += `<thead class="table-light">`;
                     content += `<tr>`;
                     content += `<th><input type="text" class="form-control" placeholder="ID"></th>`;
                     content += `<th><input type="text" class="form-control" placeholder="Name"></th>`;
                     content += `<th><input type="text" class="form-control" placeholder="Amount"></th>`;
-                    content += `<th><input type="text" class="form-control" placeholder="Date"></th>`;
+                    content += `<th><input type="text" class="form-control" placeholder="Issue Date"></th>`;
+                    content += `<th><input type="text" class="form-control" placeholder="Created At"></th>`;
                     content += `<th><select class="form-select" id="status" aria-label="Status">
                                 <option selected disabled> - Select Status- </option>
                                 <option value="draft">Draft</option>
                                 <option value="sent">Sent</option>
-                                <option value="issued">Issued</option>
+                                <option value="issued">Verified</option>
                             </select></th>`;
-                    //content += `<th><button type="button" class="btn btn-success" onclick="showCreateInvoice()">Create</i></button></th>`;
+                    content += `<th><div class="d-grid gap-2"><button type="button" class="btn btn-outline-danger" onclick="">View Archive</i></button></div></th>`;
                     content += `</tr>`;
 
                     content += `<tr>`;
-                    content += `<th>ID</th>`;
-                    content += `<th>Name</th>`;
-                    content += `<th>Amount</th>`;
-                    content += `<th>Date</th>`;
-                    content += `<th>Status</th>`;
+                    content += `<th onclick="sortTable(0, 'invoiceTable')">ID</th>`;
+                    content += `<th onclick="sortTable(1, 'invoiceTable')">Name</th>`;
+                    content += `<th onclick="sortTable(2, 'invoiceTable')">Amount</th>`;
+                    content += `<th onclick="sortTable(3, 'invoiceTable')">Issue Date</th>`;
+                    content += `<th onclick="sortTable(4, 'invoiceTable')">Created At</th>`;
+                    content += `<th onclick="sortTable(5, 'invoiceTable')">Status</th>`;
                     content += `<th>Action</th>`;
                     content += `</tr>`;
                     content += `</thead>`;
@@ -498,10 +550,29 @@
                                 <td>Invoice 1</td>
                                 <td>$150.00</td>
                                 <td>27-11-2023</td>
-                                <td>Draft</td>
+                                <td>23-10-2023</td>
+                        `
+                        
+                        switch(response.data.items[i].status)
+                        {
+                            case 0 :
+                                content += `<td><div class="d-grid gap-2"><span class="badge bg-secondary">Draft</span></div></td>`;
+                                break;
+                            case 1 :
+                                content += `<td><div class="d-grid gap-2"><span class="badge bg-info">Sent</span></div></td>`;
+                                break;
+                            case 2 :
+                                content += `<td><div class="d-grid gap-2"><span class="badge bg-success">Verified</span></div></td>`;
+                                break;
+                        }
+
+                        content += `
                                 <td>
                                     <button type="button" onclick="showEditInvoice(`+response.data.items[i].id+`)" class="btn btn-success">
                                         <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-primary">
+                                        <i class="fa-solid fa-file-arrow-down"></i>
                                     </button>
                                     <button type="button" class="btn btn-danger">
                                         <i class="fa-solid fa-trash"></i>
@@ -587,6 +658,32 @@
 
             totalInput.value = total.toFixed(2); // Update the total input with the calculated total
         }
+
+        function sortTable(columnIndex, tableId)
+        {
+            var table, rows, switching, i, x, y, shouldSwitch;
+            table = document.getElementById(tableId); // Add an id to your table
+            switching = true;
+
+            while (switching) {
+                switching = false;
+                rows = table.getElementsByTagName("tr");
+                for (i = 1; i < rows.length - 1; i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("td")[columnIndex];
+                    y = rows[i + 1].getElementsByTagName("td")[columnIndex];
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                }
+            }
+        }
+
 
         function CheckNull()
         {
