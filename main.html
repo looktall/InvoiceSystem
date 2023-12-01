@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <title>Invoice System</title>
@@ -55,6 +55,28 @@
         .center-content {
             width: 100%; /* Ensure content takes full width */
         }
+
+        .display-1 {
+            text-align: center;
+            padding: 15px;
+            font-weight: bold;
+        }
+
+        .item-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .item-table th, .item-table td {
+            padding-left: 4px;
+            padding-right: 4px;
+            text-align: center;
+        }
+
+        /* Style for the Remove button */
+        .item-table .btn-danger {
+            margin: 0; /* Remove default margin for the button */
+        }
     </style>
 </head>
 
@@ -63,21 +85,19 @@
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <a class="navbar-brand" href="#">Logo</a>
-        <!-- Add a button to toggle the side panel -->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <!-- Display username and logout link -->
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item active">
-                    <span class="navbar-text">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item d-flex align-items-center">
+                    <span class="navbar-text align-middle">
                         Welcome, <strong><span id="username"></span></strong>
                     </span>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Logout</a>
+                    <a class="nav-link" href="#" onclick="logout()">Logout</a>
                 </li>
             </ul>
         </div>
@@ -102,11 +122,11 @@
     </div>
 
      <!-- Modal -->
-    <div id="vendor-modal" class="modal" tabindex="-1" role="dialog">
+    <div id="create-vendor-modal" class="modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-body">
-                    <p id="vendor-modal-message"></p>
+                    <p id="create-vendor-modal-message"></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" onclick="hideModal()">Discard</button>
@@ -116,15 +136,43 @@
         </div>
     </div>
 
-    <div id="invoice-modal" class="modal" tabindex="-1" role="dialog">
+    <div id="create-invoice-modal" class="modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-body">
-                    <p id="invoice-modal-message"></p>
+                    <p id="create-invoice-modal-message"></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" onclick="hideModal()">Discard</button>
                     <button type="button" class="btn btn-success" onclick="">Create</button>
+                </div>
+          </div>
+        </div>
+    </div>
+
+    <div id="edit-vendor-modal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <p id="edit-vendor-modal-message"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" onclick="hideModal()">Discard</button>
+                    <button type="button" class="btn btn-success" onclick="">Save</button>
+                </div>
+          </div>
+        </div>
+    </div>
+
+    <div id="edit-invoice-modal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <p id="edit-invoice-modal-message"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" onclick="hideModal()">Discard</button>
+                    <button type="button" class="btn btn-success" onclick="">Save</button>
                 </div>
           </div>
         </div>
@@ -140,11 +188,17 @@
     <script>
         const token = localStorage.getItem('token');
 
-        const vendorModal = document.getElementById('vendor-modal');
-        const vendorModalMessage = document.getElementById('vendor-modal-message');
+        const createVendorModal = document.getElementById('create-vendor-modal');
+        const createVendorModalMessage = document.getElementById('create-vendor-modal-message');
 
-        const invoiceModal = document.getElementById('invoice-modal');
-        const invoiceModalMessage = document.getElementById('invoice-modal-message');
+        const editVendorModal = document.getElementById('edit-vendor-modal');
+        const editVendorModalMessage = document.getElementById('edit-vendor-modal-message');
+
+        const createInvoiceModal = document.getElementById('create-invoice-modal');
+        const createInvoiceModalMessage = document.getElementById('create-invoice-modal-message');
+
+        const editInvoiceModal = document.getElementById('edit-invoice-modal');
+        const editInvoiceModalMessage = document.getElementById('edit-invoice-modal-message');
 
         if (token)
         {
@@ -159,6 +213,12 @@
             }
         }
 
+        function logout()
+        {
+            localStorage.removeItem("token");
+            window.location.href = 'login.html';
+        }
+
         function updateNavBar(id)
         {
             document.getElementById("nav-overview").classList.remove("active");
@@ -169,11 +229,10 @@
             document.getElementById(id).classList.add("active");
         }
 
-        function showVendorModal() {
+        function showCreateVendor() {
 
-            updateNavBar("nav-vendor");
-
-            var content = '<table class="table table-sm table-borderless">';
+            var content = `<h1 class="display-1">Create Vendor</h1>`;
+            content += '<table class="table table-sm table-borderless">';
             content += '<tr><td>Vendor Name : </td><td><input id="vendorName" required class="form-control" type="text" onchange="CheckNull()"/></td></tr>';
             content += '<tr><td>Company Name : </td><td><input id="companyName" required class="form-control" type="text" onchange="CheckNull()"/></td></tr>';
             content += '<tr><td>Address : </td><td><textarea id="address" class="form-control" style="height:150px"></textarea></td></tr>';
@@ -181,219 +240,291 @@
             content += '<tr><td>Contact No : </td><td><input id="contactNo" required class="form-control" type="text" onchange="CheckNull()"/></td></tr>';
             content += '</table>';
 
-            vendorModalMessage.innerHTML = content;
-            vendorModal.style.display = 'block';
+            createVendorModalMessage.innerHTML = content;
+            createVendorModal.style.display = 'block';
         }
 
-        function showInvoiceModal() {
+        function showCreateInvoice(id) {
 
-            updateNavBar("nav-invoice");
+            axios.get("https://invoice-system-api.onrender.com/vendor/get/"+id,
+            {headers: { authorization: `Bearer ${token}` }})
+            .then(response => {
 
-            var content = '<table class="table table-sm table-borderless">';
-            // Recipient
-            content += '<tr><td>Recipient : </td><td><input id="recipient" required class="form-control" type="text" onchange="CheckNull()"/></td></tr>';
-            // Item List
-            content += '<tr><td>Item List : </td><td>';
-            content += '<table class="item-table" id="itemTable">';
-            content += '<tr><th>Item</th><th>Quantity</th><th>Unit Price</th><th>Action</th></tr>';
-            content += '<tr>';
-            content += '<td><input class="form-control" type="text" name="item[]" /></td>';
-            content += '<td><input class="form-control" type="number" name="quantity[]" /></td>';
-            content += '<td><input class="form-control" type="number" name="unitPrice[]" /></td>';
-            content += '<td><button type="button" onclick="addRow()">Add</button></td>';
-            content += '</tr>';
-            content += '</table>';
-            content += '</td></tr>';
-            // Total
-            content += '<tr><td>Total : </td><td><input id="total" readonly class="form-control" type="text"/></td></tr>';
-            content += '</table>';
+                var content = `<h1 class="display-1">Vendor</h1>`;
+                content += '<table class="table table-sm table-borderless">';
+                content += '<tr><td>Recipient : </td><td><input id="recipient" disabled class="form-control" type="text" onchange="CheckNull()"/></td></tr>';
+                content += `<tr>`;
+                content += `<table class="item-table" id="itemTable">`;
+                content += `<tr><th>Item</th><th>Quantity</th><th>Unit Price</th><th>Subtotal</th><th>Action</th></tr>`;
+                content += `<tr><td colspan="5"><div class="d-grid gap-2"><button class="btn btn-success" type="button" onclick="addRow()"><i class="fa-solid fa-plus"></i> Add Row</button></div></td></tr>`;
+                content += `</table>`;
+                content += `</td></tr>`;
+                content += `<tr><td>Total : </td><td><input id="total" readonly class="form-control" type="text"/></td></tr>`;
+                content += `</table>`;
 
-            invoiceModalMessage.innerHTML = content;
-            invoiceModal.style.display = 'block';
+                createInvoiceModalMessage.innerHTML = content;
+                createInvoiceModal.style.display = 'block';
+
+                addRow();
+            });
+        }
+
+        function showEditVendor(id) {
+
+            axios.get("https://invoice-system-api.onrender.com/vendor/get/"+id,
+            {headers: { authorization: `Bearer ${token}` }})
+            .then(response => {
+
+                var content = `<h1 class="display-1">Vendor</h1>`;
+                content += '<table class="table table-sm table-borderless">';
+                content += `<tr>
+                                <td>Vendor Name : </td>
+                                <td><input id="vendorName" required class="form-control" type="text" onchange="CheckNull()" value="`+response.data.vendor_name+`"/></td>
+                            </tr>`;
+                content += `<tr>
+                                <td>Company Name : </td>
+                                <td><input id="companyName" required class="form-control" type="text" onchange="CheckNull()" value="`+response.data.company_name+`"/></td>
+                            </tr>`;
+                content += `<tr>
+                                <td>Address : </td>
+                                <td><textarea id="address" class="form-control" style="height:150px">`+response.data.address+`</textarea></td>
+                            </tr>`;
+                content += `<tr>
+                                <td>Email : </td>
+                                <td><input id="email" required class="form-control" type="text" onchange="CheckNull()" value="`+response.data.email+`"/></td>
+                            </tr>`;
+                content += `<tr>
+                                <td>Contact No : </td>
+                                <td><input id="contactNo" required class="form-control" type="text" onchange="CheckNull()" value="`+response.data.contact_no+`"/></td>
+                            </tr>`;
+                content += `</table>`;
+
+                editVendorModalMessage.innerHTML = content;
+                editVendorModal.style.display = 'block'; 
+            });
+        }
+
+        function showEditInvoice(id) {
+
+            var content = `<h1 class="display-1">Invoice</h1>`;
+            content += '<table class="table table-sm table-borderless">';
+            content += '<tr><td>Recipient : </td><td><input id="recipient" disabled class="form-control" type="text" onchange="CheckNull()"/></td></tr>';
+            content += `<tr>`;
+            content += `<table class="item-table" id="itemTable">`;
+            content += `<tr><th>Item</th><th>Quantity</th><th>Unit Price</th><th>Subtotal</th><th>Action</th></tr>`;
+            content += `<tr><td colspan="5"><div class="d-grid gap-2"><button class="btn btn-success" type="button" onclick="addRow()"><i class="fa-solid fa-plus"></i> Add Row</button></div></td></tr>`;
+            content += `</table>`;
+            content += `</td></tr>`;
+            content += `<tr><td>Total : </td><td><input id="total" readonly class="form-control" type="text"/></td></tr>`;
+            content += `</table>`;
+
+            editInvoiceModalMessage.innerHTML = content;
+            editInvoiceModal.style.display = 'block';
+
+            addRow();
         }
 
         function hideModal() {
-            vendorModal.style.display = 'none';
-            invoiceModal.style.display = 'none';
+            createVendorModal.style.display = 'none';
+            createInvoiceModal.style.display = 'none';
+            editVendorModal.style.display = 'none';
+            editInvoiceModal.style.display = 'none';
         }
 
         function showOverview() {
 
-            //updateNavBar("nav-overview");
-
+            updateNavBar("nav-overview");
             const mainContent = document.querySelector('.center-content');
 
-            var data = `
-                <canvas id="barChart" style="width:100%;></canvas>
-                <canvas id="pieChart" style="width:100%;></canvas>
-            `;
+            var content = `<h1 class="display-1">Overview</h1>`;
 
-            mainContent.innerHTML = data;
+            content += `<table class="table table-sm table-borderless">
+                <tr>
+                    <td><canvas id="barChart" style="width:100%"></canvas></td>
+                    <td><canvas id="pieChart" style="width:100%"></canvas></td>
+                </tr>
+                </table>`
+
+            mainContent.innerHTML = content;
             
-            new Chart("barChart", {
-                type: 'bar',
+            
+            var xValues = ["Italy", "France", "Spain", "USA", "Argentina"];
+            var yValues = [55, 49, 44, 24, 15];
+            var barColors = ["red", "green","blue","orange","brown"];
+
+            const barChart = new Chart("barChart", {
+                type: "bar",
                 data: {
-                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-                datasets: [{
-                    label: '# of Votes',
-                    data: [12, 19, 3, 5, 2, 3],
-                    backgroundColor: [
-                        'rgb(255, 51, 51)',
-                        'rgb(0, 128, 255)',
-                        'rgb(255, 225, 51)',
-                        'rgb(102, 204, 0)',
-                        'rgb(102, 0, 204)',
-                        'rgb(255, 128, 0)',
-                    ],
-                    borderWidth: 1
-                }]
+                    labels: xValues,
+                    datasets: [{
+                    backgroundColor: barColors,
+                    data: yValues
+                    }]
                 },
-                options: {
-                scales: {
-                    y: {
-                    beginAtZero: true
-                    }
-                }
-                }
             });
 
-            new Chart("pieChart", {
-                type: 'pie',
+            const pieChart = new Chart("pieChart", {
+                type: "pie",
                 data: {
-                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-                datasets: [{
-                    label: '# of Votes',
-                    data: [12, 19, 3, 5, 2, 3],
-                    backgroundColor: [
-                        'rgb(255, 51, 51)',
-                        'rgb(0, 128, 255)',
-                        'rgb(255, 225, 51)',
-                        'rgb(102, 204, 0)',
-                        'rgb(102, 0, 204)',
-                        'rgb(255, 128, 0)',
-                    ],
-                    hoverOffset: 4,
-                    borderWidth: 1
-                }]
+                    labels: xValues,
+                    datasets: [{
+                    backgroundColor: barColors,
+                    data: yValues
+                    }]
                 },
                 options: {
-                scales: {
-                    y: {
-                    beginAtZero: true
+                    title: {
+                    display: true,
+                    text: "World Wide Wine Production"
                     }
-                }
                 }
             });
         }
 
         function showVendor() {
 
-            //updateNavBar("nav-vendor");
+            updateNavBar("nav-vendor");
 
             const mainContent = document.querySelector('.center-content');
             
-            var data = "";
+            var content = `<h1 class="display-1">Vendor</h1>`;
 
             axios.get("https://invoice-system-api.onrender.com/vendor/get/",
             {headers: { authorization: `Bearer ${token}` }})
             .then(response => {
 
-                data += `<div class="row">`;
-                data += `<div class="col">`;
-                data += `<table class="table table-hover table-sm">`;
-                data += `<thead>`;
-                data += `<tr>`;
-                data += `<th><input type="text" class="form-control" placeholder="ID"></th>`;
-                data += `<th><input type="text" class="form-control" placeholder="Name"></th>`;
-                data += `<th><input type="text" class="form-control" placeholder="Amount"></th>`;
-                data += `<th><button type="button" class="btn btn-success">Create</i></button></th>`;
-                data += `</tr>`;
+                content += `<div class="row">`;
+                content += `<div class="col">`;
+                content += `<table class="table table-hover table-sm">`;
+                content += `<thead>`;
+                content += `<tr>`;
+                content += `<th><input type="text" class="form-control" placeholder="ID"></th>`;
+                content += `<th><input type="text" class="form-control" placeholder="Name"></th>`;
+                content += `<th><div class="d-grid gap-2"><button type="button" class="btn btn-success" onclick="showCreateVendor()">Create</i></button></div></th>`;
+                content += `</tr>`;
 
-                data += `<tr>`;
-                data += `<th>ID</th>`;
-                data += `<th>Name</th>`;
-                data += `<th>Amount</th>`;
-                data += `<th>Action</th>`;
-                data += `</tr>`;
-                data += `</thead>`;
-                data += `<tbody>`;
+                content += `<tr>`;
+                content += `<th>ID</th>`;
+                content += `<th>Name</th>`;
+                content += `<th>Action</th>`;
+                content += `</tr>`;
+                content += `</thead>`;
+                content += `<tbody>`;
                 
 
-                for(i = 0; i < response.data.length; i++)
+                for(i = 0; i < response.data.items.length; i++)
                 {
-                    data += `
+                    content += `
                         <tr>
                             <td>1</td>
                             <td>Vendor 1</td>
-                            <td>$100.00</td>
-                            <td><button type="button" class="btn btn-success"><i class="fa-solid fa-pen-to-square"></i></button> <button type="button" class="btn btn-danger"><i class="fa-solid fa-trash"></i></button></td>
+                            <td>
+                                <button type="button" onclick="showEditVendor(`+response.data.items[i].id+`)" class="btn btn-success">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button type="button" onclick="showCreateInvoice(`+response.data.items[i].id+`)" class="btn btn-primary">
+                                    <i class="fa-solid fa-file-invoice"></i>
+                                </button>
+                                <button type="button" class="btn btn-danger">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
                         </tr>
-                    `
+                    `;
                 }
 
-                data += `</tbody>`;
-                data += `</table>`;
-                data += `</div>`;
-                data += `</div>`;
-                data += `<div class="row">`;
-                data += `<div class="col">`;
-                data += `</div>`;
-                data += `</div>`;
+                content += `</tbody>`;
+                content += `</table>`;
+                content += `</div>`;
+                content += `</div>`;
+                content += `<div class="row">`;
+                content += `<div class="col">`;
+                content += `</div>`;
+                content += `</div>`;
+
+                mainContent.innerHTML = content;
             })
             .catch(error => {
                 console.log(error);
             });
-            
-            mainContent.innerHTML = data;
         }
 
         function showInvoice() {
 
-            //updateNavBar("nav-invoice");
+            updateNavBar("nav-invoice");
 
             const mainContent = document.querySelector('.center-content');
 
-            var data = "";
+            var content = `<h1 class="display-1">Invoice</h1>`;
 
             axios.get("https://invoice-system-api.onrender.com/invoice/get/",
             {headers: { authorization: `Bearer ${token}` }})
                 .then(response => {
                     
-                    data += `<div class="row">`;
-                    data += `<div class="col">`;
-                    data += `<table class="table table-hover table-sm">`;
-                    data += `<thead>`;
-                    data += `<tr>`;
-                    data += `<th><input type="text" class="form-control" placeholder="ID"></th>`;
-                    data += `<th><input type="text" class="form-control" placeholder="Name"></th>`;
-                    data += `<th><input type="text" class="form-control" placeholder="Amount"></th>`;
-                    data += `<th><button type="button" class="btn btn-success">Create</i></button></th>`;
-                    data += `</tr>`;
+                    content += `<div class="row">`;
+                    content += `<div class="col">`;
+                    content += `<table class="table table-hover table-sm">`;
+                    content += `<thead>`;
+                    content += `<tr>`;
+                    content += `<th><input type="text" class="form-control" placeholder="ID"></th>`;
+                    content += `<th><input type="text" class="form-control" placeholder="Name"></th>`;
+                    content += `<th><input type="text" class="form-control" placeholder="Amount"></th>`;
+                    content += `<th><input type="text" class="form-control" placeholder="Date"></th>`;
+                    content += `<th><select class="form-select" id="status" aria-label="Status">
+                                <option selected disabled> - Select Status- </option>
+                                <option value="draft">Draft</option>
+                                <option value="sent">Sent</option>
+                                <option value="issued">Issued</option>
+                            </select></th>`;
+                    //content += `<th><button type="button" class="btn btn-success" onclick="showCreateInvoice()">Create</i></button></th>`;
+                    content += `</tr>`;
 
-                    data += `<tr>`;
-                    data += `<th>ID</th>`;
-                    data += `<th>Name</th>`;
-                    data += `<th>Amount</th>`;
-                    data += `<th>Action</th>`;
-                    data += `</tr>`;
-                    data += `</thead>`;
-                    data += `<tbody>`;
+                    content += `<tr>`;
+                    content += `<th>ID</th>`;
+                    content += `<th>Name</th>`;
+                    content += `<th>Amount</th>`;
+                    content += `<th>Date</th>`;
+                    content += `<th>Status</th>`;
+                    content += `<th>Action</th>`;
+                    content += `</tr>`;
+                    content += `</thead>`;
+                    content += `<tbody>`;
 
-                    data += `</tbody>`;
-                    data += `</table>`;
-                    data += `</div>`;
-                    data += `</div>`;
-                    data += `<div class="row">`;
-                    data += `<div class="col">`;
-                    data += `</div>`;
-                    data += `</div>`;
+                    for(i = 0; i < response.data.items.length; i++)
+                    {
+                        content += `
+                            <tr>
+                                <td>1</td>
+                                <td>Invoice 1</td>
+                                <td>$150.00</td>
+                                <td>27-11-2023</td>
+                                <td>Draft</td>
+                                <td>
+                                    <button type="button" onclick="showEditInvoice(`+response.data.items[i].id+`)" class="btn btn-success">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    }
 
+                    content += `</tbody>`;
+                    content += `</table>`;
+                    content += `</div>`;
+                    content += `</div>`;
+                    content += `<div class="row">`;
+                    content += `<div class="col">`;
+                    content += `</div>`;
+                    content += `</div>`;
+
+                    mainContent.innerHTML = content;
                 })
                 .catch(error => {
                     console.log(error);
             });
-            
-            mainContent.innerHTML = data;
         }
 
         function addRow() {
@@ -401,36 +532,80 @@
             var newRow = table.insertRow(table.rows.length - 1);
 
             var cells = [];
-            for (var i = 0; i < 3; i++) {
+            for (var i = 0; i < 4; i++) { // Increase the loop to 4 for the new subtotal cell
                 var cell = newRow.insertCell(i);
                 var input = document.createElement("input");
                 input.className = "form-control";
                 input.type = (i === 1 || i === 2) ? "number" : "text";
-                input.name = i === 0 ? "item[]" : i === 1 ? "quantity[]" : "unitPrice[]";
+                input.name = i === 0 ? "item[]" : i === 1 ? "quantity[]" : i === 2 ? "unitPrice[]" : "subtotal[]"; // Add a new case for subtotal
+
+                // Add onchange event to quantity and unit price inputs
+                if (i === 1 || i === 2) {
+                    input.onchange = function () {
+                        updateTotal();
+                    };
+                }
+
+                if (i === 3) { // If it's the subtotal cell, make it disabled
+                    input.disabled = true;
+                }
+
                 cell.appendChild(input);
                 cells.push(cell);
             }
 
-            var actionCell = newRow.insertCell(3);
+            // Add a cell for remove button
+            var removeCell = newRow.insertCell(4);
             var removeButton = document.createElement("button");
             removeButton.type = "button";
-            removeButton.innerHTML = "Remove";
+            removeButton.classList.add("btn");
+            removeButton.classList.add("btn-danger");
+            removeButton.innerHTML = `<i class="fa-solid fa-trash"></i> Remove`;
             removeButton.onclick = function () {
                 table.deleteRow(newRow.rowIndex);
+                updateTotal(); // Update total when a row is removed
             };
-            actionCell.appendChild(removeButton);
+            removeCell.appendChild(removeButton);
         }
 
+        // Function to update the total and subtotal
+        function updateTotal() {
+            var table = document.getElementById("itemTable");
+            var totalInput = document.getElementById("total");
+            var total = 0;
+
+            for (var i = 1; i < table.rows.length - 1; i++) {
+                var quantity = parseFloat(table.rows[i].cells[1].getElementsByTagName("input")[0].value) || 0;
+                var unitPrice = parseFloat(table.rows[i].cells[2].getElementsByTagName("input")[0].value) || 0;
+                var subtotal = quantity * unitPrice;
+
+                // Update the subtotal cell
+                table.rows[i].cells[3].getElementsByTagName("input")[0].value = subtotal.toFixed(2);
+
+                total += subtotal;
+            }
+
+            totalInput.value = total.toFixed(2); // Update the total input with the calculated total
+        }
+
+        function CheckNull()
+        {
+
+        }
+        
         // Example: Call showTable when the page loads
-        // window.onload = function () {
+        window.onload = function () {
 
-        //     const urlParams = new URLSearchParams(window.location.search);
+            const urlParams = new URLSearchParams(window.location.search);
 
-        //     if(urlParams.has('content'))
-        //         updateNavBar(urlParams.get('content'));
-        //     else
-        //         updateNavBar("nav-overview");
-        // }
+            if(urlParams.has('content'))
+                updateNavBar(urlParams.get('content'));
+            else
+            {
+                updateNavBar("nav-overview");
+                showOverview();
+            }
+        }
     </script>
 </body>
 </html>
