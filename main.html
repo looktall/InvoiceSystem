@@ -238,7 +238,7 @@
             document.getElementById("nav-overview").classList.remove("active");
             document.getElementById("nav-vendor").classList.remove("active");
             document.getElementById("nav-invoice").classList.remove("active");
-            //document.getElementById("nav-setting").classList.remove("active");
+            document.getElementById("nav-admin").classList.remove("active");
 
             document.getElementById(id).classList.add("active");
         }
@@ -397,7 +397,6 @@
             createInvoiceModalMessage.innerHTML = "";
             editVendorModalMessage.innerHTML = "";
             editInvoiceModalMessage.innerHTML = "";
-
         }
 
         function showOverview() {
@@ -733,7 +732,6 @@
             removeCell.appendChild(removeButton);
         }
 
-        // Function to update the total and subtotal
         function updateTotal() {
             var table = document.getElementById("itemTable");
             var totalInput = document.getElementById("total");
@@ -834,7 +832,6 @@
 
         }
         
-        // Example: Call showTable when the page loads
         window.onload = function () {
 
             const urlParams = new URLSearchParams(window.location.search);
