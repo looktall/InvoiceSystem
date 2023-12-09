@@ -127,6 +127,9 @@
                 <a id="nav-invoice" class="nav-link" href="#" onclick="showInvoice()">Invoice</a>
             </li>
             <li class="nav-item">
+                <a id="nav-admin" class="nav-link" href="#" onclick="showAdmin()">Admin</a>
+            </li>
+            <li class="nav-item">
                 <a id="nav-setting" class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Setting</a>
             </li>
         </ul>
@@ -141,7 +144,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" onclick="hideModal()">Discard</button>
-                    <button type="button" class="btn btn-success" onclick="">Create</button>
+                    <button type="button" class="btn btn-success" onclick="saveVendor()">Create</button>
                 </div>
           </div>
         </div>
@@ -155,7 +158,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" onclick="hideModal()">Discard</button>
-                    <button type="button" class="btn btn-success" onclick="">Create</button>
+                    <button type="button" class="btn btn-success" onclick="saveInvoice()">Create</button>
                 </div>
           </div>
         </div>
@@ -169,7 +172,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" onclick="hideModal()">Discard</button>
-                    <button type="button" class="btn btn-success" onclick="">Save</button>
+                    <button type="button" class="btn btn-success" onclick="saveVendor()">Save</button>
                 </div>
           </div>
         </div>
@@ -183,7 +186,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" onclick="hideModal()">Discard</button>
-                    <button type="button" class="btn btn-success" onclick="">Save</button>
+                    <button type="button" class="btn btn-success" onclick="saveInvoice()">Save</button>
                 </div>
           </div>
         </div>
@@ -263,7 +266,7 @@
 
                 var content = `<h1 class="display-1">Vendor</h1>`;
                 content += '<table class="table table-sm table-borderless">';
-                content += '<tr><td>Recipient : </td><td><input id="recipient" disabled class="form-control" type="text" onchange="CheckNull()"/></td></tr>';
+                content += '<tr><td>Recipient : </td><td><input id="recipient" disabled class="form-control" type="text" onchange="CheckNull()"/>'+response.data.vendor_name+'</td></tr>';
                 content += `<tr>`;
                 content += `<table class="item-table" id="itemTable">`;
                 content += `<tr><th>Item</th><th>Quantity</th><th>Unit Price</th><th>Subtotal</th><th>Action</th></tr>`;
@@ -353,22 +356,35 @@
 
         function showEditInvoice(id) {
 
-            var content = `<h1 class="display-1">Invoice</h1>`;
-            content += '<table class="table table-sm table-borderless">';
-            content += '<tr><td>Recipient : </td><td><input id="recipient" disabled class="form-control" type="text" onchange="CheckNull()"/></td></tr>';
-            content += `<tr>`;
-            content += `<table class="item-table" id="itemTable">`;
-            content += `<tr><th>Item</th><th>Quantity</th><th>Unit Price</th><th>Subtotal</th><th>Action</th></tr>`;
-            content += `<tr><td colspan="5"><div class="d-grid gap-2"><button class="btn btn-outline-success" type="button" onclick="addRow()"><i class="fa-solid fa-plus"></i> Add Row</button></div></td></tr>`;
-            content += `</table>`;
-            content += `</td></tr>`;
-            content += `<tr><td>Total : </td><td><input id="total" readonly class="form-control" type="text"/></td></tr>`;
-            content += `</table>`;
+            axios.get("https://invoice-system-api.onrender.com/invoice/get/"+id,
+            {headers: { authorization: `Bearer ${token}` }})
+            .then(response => {
+                
+                var recipientName = "";
 
-            editInvoiceModalMessage.innerHTML = content;
-            editInvoiceModal.style.display = 'block';
+                axios.get("https://invoice-system-api.onrender.com/vendor/get/"+response.data.recipient,
+                {headers: { authorization: `Bearer ${token}` }})
+                .then(recipient => {
+                    recipientName = recipient.vendor_name;
+                });
 
-            addRow();
+                var content = `<h1 class="display-1">Invoice</h1>`;
+                content += '<table class="table table-sm table-borderless">';
+                content += '<tr><td>Recipient : </td><td><input id="recipient" disabled class="form-control" type="text" onchange="CheckNull()"/>'+recipientName+'</td></tr>';
+                content += `<tr>`;
+                content += `<table class="item-table" id="itemTable">`;
+                content += `<tr><th>Item</th><th>Quantity</th><th>Unit Price</th><th>Subtotal</th><th>Action</th></tr>`;
+                content += `<tr><td colspan="5"><div class="d-grid gap-2"><button class="btn btn-outline-success" type="button" onclick="addRow()"><i class="fa-solid fa-plus"></i> Add Row</button></div></td></tr>`;
+                content += `</table>`;
+                content += `</td></tr>`;
+                content += `<tr><td>Total : </td><td><input id="total" readonly class="form-control" type="text"/></td></tr>`;
+                content += `</table>`;
+
+                editInvoiceModalMessage.innerHTML = content;
+                editInvoiceModal.style.display = 'block';
+
+                addRow();
+            });
         }
 
         function hideModal() {
@@ -376,6 +392,12 @@
             createInvoiceModal.style.display = 'none';
             editVendorModal.style.display = 'none';
             editInvoiceModal.style.display = 'none';
+
+            createVendorModalMessage.innerHTML = "";
+            createInvoiceModalMessage.innerHTML = "";
+            editVendorModalMessage.innerHTML = "";
+            editInvoiceModalMessage.innerHTML = "";
+
         }
 
         function showOverview() {
@@ -598,6 +620,76 @@
             });
         }
 
+        function showAdmin()
+        {
+            updateNavBar("nav-admin");
+
+            const mainContent = document.querySelector('.center-content');
+
+            var content = `<h1 class="display-1">Admin</h1>`;
+
+            axios.get("https://invoice-system-api.onrender.com/user/get/",
+            {headers: { authorization: `Bearer ${token}` }})
+                .then(response => {
+                    
+                    content += `<div class="row">`;
+                    content += `<div class="col">`;
+                    content += `<table id="adminTable" class="table table-hover table-sm">`;
+                    content += `<thead class="table-light">`;
+                    content += `<tr>`;
+                    content += `<th><input type="text" class="form-control" placeholder="ID"></th>`;
+                    content += `<th><input type="text" class="form-control" placeholder="Name"></th>`;
+                    content += `<th><div class="d-grid gap-2"><button type="button" class="btn btn-outline-danger" onclick="">Create New Admin</i></button></div></th>`;
+                    content += `</tr>`;
+
+                    content += `<tr>`;
+                    content += `<th onclick="sortTable(0, 'adminTable')">ID</th>`;
+                    content += `<th onclick="sortTable(1, 'adminTable')">Name</th>`;
+                    content += `<th>Action</th>`;
+                    content += `</tr>`;
+                    content += `</thead>`;
+                    content += `<tbody>`;
+
+                    for(i = 0; i < response.data.items.length; i++)
+                    {
+                        content += `
+                            <tr>
+                                <td>1</td>
+                                <td>Invoice 1</td>
+                        `
+                        
+                        content += `
+                                <td>
+                                    <button type="button" onclick="showEditInvoice(`+response.data.items[i].id+`)" class="btn btn-success">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-primary">
+                                        <i class="fa-solid fa-file-arrow-down"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    }
+
+                    content += `</tbody>`;
+                    content += `</table>`;
+                    content += `</div>`;
+                    content += `</div>`;
+                    content += `<div class="row">`;
+                    content += `<div class="col">`;
+                    content += `</div>`;
+                    content += `</div>`;
+
+                    mainContent.innerHTML = content;
+                })
+                .catch(error => {
+                    console.log(error);
+            });
+        }
+
         function addRow() {
             var table = document.getElementById("itemTable");
             var newRow = table.insertRow(table.rows.length - 1);
@@ -619,6 +711,8 @@
 
                 if (i === 3) { // If it's the subtotal cell, make it disabled
                     input.disabled = true;
+                } else {
+                    input.setAttribute("required", true); // Make all other fields required
                 }
 
                 cell.appendChild(input);
@@ -684,6 +778,56 @@
             }
         }
 
+        function saveVendor() {
+            var vendorData = {
+                vendorName: document.getElementById("vendorName").value || "",
+                companyName: document.getElementById("companyName").value || "",
+                address: document.getElementById("address").value || "",
+                email: document.getElementById("email").value || "",
+                contactNo: document.getElementById("contactNo").value || ""
+            };
+
+            // Convert the vendorData to a JSON string
+            var jsonString = JSON.stringify(vendorData, null, 2);
+
+            // Log or use the jsonString as needed
+            console.log(jsonString);
+            alert(jsonString);
+        }
+
+        function saveInvoice() {
+            var table = document.getElementById("itemTable");
+            var jsonData = [];
+
+            for (var i = 1; i < table.rows.length - 1; i++) { // Start from 1 to skip header and end before the last row (Add Row button)
+                var row = table.rows[i];
+                var item = row.cells[0].getElementsByTagName("input")[0].value;
+                var quantity = parseFloat(row.cells[1].getElementsByTagName("input")[0].value) || 0;
+                var unitPrice = parseFloat(row.cells[2].getElementsByTagName("input")[0].value) || 0;
+                var subtotal = parseFloat(row.cells[3].getElementsByTagName("input")[0].value) || 0;
+
+                jsonData.push({
+                    item: item,
+                    quantity: quantity,
+                    unitPrice: unitPrice,
+                    subtotal: subtotal
+                });
+            }
+
+            var total = parseFloat(document.getElementById("total").value) || 0;
+
+            // Add total to the JSON data
+            jsonData.push({
+                total: total
+            });
+
+            // Convert the JSON data to a string
+            var jsonString = JSON.stringify(jsonData, null, 2);
+
+            // Log or use the jsonString as needed
+            console.log(jsonString);
+            alert(jsonString);
+        }
 
         function CheckNull()
         {
