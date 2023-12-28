@@ -137,13 +137,17 @@
 
      <!-- Modal -->
     <div id="create-vendor-modal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="create-vendor-title">Create Vendor</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="hideModal()"></button>
+                </div>
                 <div class="modal-body">
                     <p id="create-vendor-modal-message"></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" onclick="hideModal()">Discard</button>
+                    <!-- <button type="button" class="btn btn-danger" onclick="hideModal()">Discard</button> -->
                     <button type="button" class="btn btn-success" onclick="saveVendor()">Create</button>
                 </div>
           </div>
@@ -151,13 +155,17 @@
     </div>
 
     <div id="create-invoice-modal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="create-vendor-title">Create Invoice</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="hideModal()"></button>
+                </div>
                 <div class="modal-body">
                     <p id="create-invoice-modal-message"></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" onclick="hideModal()">Discard</button>
+                    <!-- <button type="button" class="btn btn-danger" onclick="hideModal()">Discard</button> -->
                     <button type="button" class="btn btn-success" onclick="saveInvoice()">Create</button>
                 </div>
           </div>
@@ -165,13 +173,17 @@
     </div>
 
     <div id="edit-vendor-modal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="create-vendor-title">Edit Vendor</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="hideModal()"></button>
+                </div>
                 <div class="modal-body">
                     <p id="edit-vendor-modal-message"></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" onclick="hideModal()">Discard</button>
+                    <!-- <button type="button" class="btn btn-danger" onclick="hideModal()">Discard</button> -->
                     <button type="button" class="btn btn-success" onclick="saveVendor()">Save</button>
                 </div>
           </div>
@@ -181,11 +193,15 @@
     <div id="edit-invoice-modal" class="modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="create-vendor-title">Edit Invoice</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="hideModal()"></button>
+                </div>
                 <div class="modal-body">
                     <p id="edit-invoice-modal-message"></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" onclick="hideModal()">Discard</button>
+                    <!-- <button type="button" class="btn btn-danger" onclick="hideModal()">Discard</button> -->
                     <button type="button" class="btn btn-success" onclick="saveInvoice()">Save</button>
                 </div>
           </div>
@@ -245,13 +261,34 @@
 
         function showCreateVendor() {
 
-            var content = `<h1 class="display-1">Create Vendor</h1>`;
+            var content = "";
             content += '<table class="table table-sm table-borderless">';
+            content += `<tr><td>
+                <div class="btn-group vendor" role="group">
+                    <button type="button" class="btn btn-success" onclick="selectVendorType(this, 0)">Individual</button>
+                    <button type="button" class="btn btn-outline-success" onclick="selectVendorType(this, 1)">Company</button>
+                </div>
+            </td></tr>`;
+            content += '<tr><td><input type="hidden" name="vendorType" id="vendorType" value="0"></td></tr>';
             content += '<tr><td>Vendor Name : </td><td><input id="vendorName" required class="form-control" type="text" onchange="CheckNull()"/></td></tr>';
+            content += '<tr><td>NRIC : </td><td><input id="NRIC" required class="form-control" type="text" onchange="CheckNull()"/></td></tr>';
             content += '<tr><td>Company Name : </td><td><input id="companyName" required class="form-control" type="text" onchange="CheckNull()"/></td></tr>';
+            content += '<tr><td>Company Registration NO : </td><td><input id="companyRegNo" required class="form-control" type="text" onchange="CheckNull()"/></td></tr>';
             content += '<tr><td>Address : </td><td><textarea id="address" class="form-control" style="height:150px"></textarea></td></tr>';
             content += '<tr><td>Email : </td><td><input id="email" required class="form-control" type="text" onchange="CheckNull()"/></td></tr>';
             content += '<tr><td>Contact No : </td><td><input id="contactNo" required class="form-control" type="text" onchange="CheckNull()"/></td></tr>';
+            content += `<tr><td>Payment Terms : </td><td>
+                <div class="btn-group payment-term" role="group">
+                    <button type="button" class="btn btn-success" onclick="selectPaymentTerms(this, 14)">14</button>
+                    <button type="button" class="btn btn-outline-success" onclick="selectPaymentTerms(this, 30)">30</button>
+                    <button type="button" class="btn btn-outline-success" onclick="selectPaymentTerms(this, 60)">60</button>
+                </div>
+                </td></tr>`;
+            content += '<tr><td><input type="hidden" name="paymentTerm" id="paymentTerm" value="14"></td></tr>';
+            content += '<tr><td>Bank Name : </td><td><input id="bankName" required class="form-control" type="text" onchange="CheckNull()"/></td></tr>';
+            content += '<tr><td>Beneficiary Name : </td><td><input id="beneficiaryName" required class="form-control" type="text" onchange="CheckNull()"/></td></tr>';
+            content += '<tr><td>Account No : </td><td><input id="accountNo" required class="form-control" type="text" onchange="CheckNull()"/></td></tr>';
+            
             content += '</table>';
 
             createVendorModalMessage.innerHTML = content;
@@ -264,7 +301,7 @@
             {headers: { authorization: `Bearer ${token}` }})
             .then(response => {
 
-                var content = `<h1 class="display-1">Vendor</h1>`;
+                var content = "";
                 content += '<table class="table table-sm table-borderless">';
                 content += '<tr><td>Recipient : </td><td><input id="recipient" disabled class="form-control" type="text" onchange="CheckNull()"/>'+response.data.vendor_name+'</td></tr>';
                 content += `<tr>`;
@@ -289,28 +326,76 @@
             {headers: { authorization: `Bearer ${token}` }})
             .then(response => {
 
-                var content = `<h1 class="display-1">Vendor</h1>`;
+                var content = "";
                 content += '<table class="table table-sm table-borderless">';
+                content += `<tr><td><div class="btn-group vendor" role="group">`
+                
+
+
+                    
+                content += `</div></td></tr>`;
+                for(var i = 0; i < 3; i++)
+                {
+                    var option = [0, 1];
+                    var optionName = ['Individual', 'Company'];
+
+                    if(response.data.vendor_type == option[i])
+                        content += `<button type="button" class="btn btn-success" onclick="selectVendorType(this, `+option[i]+`)">`+optionName[i]+`</button>`;
+                    else
+                        content += `<button type="button" class="btn btn-outline-success" onclick="selectVendorType(this, `+option[i]+`)">`+optionName[i]+`</button>`;
+                }
+                content += `<tr><td><input type="hidden" name="vendorType" id="vendorType" value="`+response.data.vendor_type+`"></td></tr>`;
                 content += `<tr>
                                 <td>Vendor Name : </td>
                                 <td><input id="vendorName" required class="form-control" type="text" onchange="CheckNull()" value="`+response.data.vendor_name+`"/></td>
                             </tr>`;
+
+                content += `<tr>
+                                <td>NRIC: </td>
+                                <td><input id="NRIC" required class="form-control" type="text" onchange="CheckNull()" value="`+response.data.NRIC+`"/></td>
+                            </tr>`;
+
                 content += `<tr>
                                 <td>Company Name : </td>
                                 <td><input id="companyName" required class="form-control" type="text" onchange="CheckNull()" value="`+response.data.company_name+`"/></td>
                             </tr>`;
+
+                content += `<tr>
+                                <td>Company Registration NO : </td>
+                                <td><input id="companyRegNo" required class="form-control" type="text" onchange="CheckNull()" value="`+response.data.company_reg_no+`"/></td>
+                            </tr>`;
+
                 content += `<tr>
                                 <td>Address : </td>
                                 <td><textarea id="address" class="form-control" style="height:150px">`+response.data.address+`</textarea></td>
                             </tr>`;
+
                 content += `<tr>
                                 <td>Email : </td>
                                 <td><input id="email" required class="form-control" type="text" onchange="CheckNull()" value="`+response.data.email+`"/></td>
                             </tr>`;
+
                 content += `<tr>
                                 <td>Contact No : </td>
                                 <td><input id="contactNo" required class="form-control" type="text" onchange="CheckNull()" value="`+response.data.contact_no+`"/></td>
                             </tr>`;
+
+                content += `<tr><td>Payment Terms : </td><td><div class="btn-group payment-term" role="group">`
+                for(var i = 0; i < 3; i++)
+                {
+                    var option = [14, 30, 60];
+
+                    if(response.data.payment_term == option[i])
+                        content += `<button type="button" class="btn btn-success" onclick="selectPaymentTerms(this, `+option[i]+`)">`+option[i]+`</button>`
+                    else
+                        content += `<button type="button" class="btn btn-outline-success" onclick="selectPaymentTerms(this, `+option[i]+`)">`+option[i]+`</button>`
+                }
+                content += `</div></td></tr>`;
+
+                content += `<tr>
+                                <td><input type="hidden" name="paymentTerm" id="paymentTerm" value="`+response.data.payment_term+`"></td>
+                            </tr>`;
+                
                 content += `</table>`;
 
                 content += '<br><br>';
@@ -368,7 +453,7 @@
                     recipientName = recipient.vendor_name;
                 });
 
-                var content = `<h1 class="display-1">Invoice</h1>`;
+                var content = "";
                 content += '<table class="table table-sm table-borderless">';
                 content += '<tr><td>Recipient : </td><td><input id="recipient" disabled class="form-control" type="text" onchange="CheckNull()"/>'+recipientName+'</td></tr>';
                 content += `<tr>`;
@@ -830,6 +915,34 @@
         function CheckNull()
         {
 
+        }
+
+        function selectVendorType(btn, vendorType) 
+        {
+            var buttons = document.querySelectorAll('.vendor .btn');
+            buttons.forEach(function (button) {
+                button.classList.remove('btn-success');
+                button.classList.add('btn-outline-success');
+            });
+
+            btn.classList.remove('btn-outline-success');
+            btn.classList.add('btn-success');
+
+            document.getElementById("vendorType").value = vendorType;
+        }
+
+        function selectPaymentTerms(btn, paymentTerm) 
+        {
+            var buttons = document.querySelectorAll('.payment-term .btn');
+            buttons.forEach(function (button) {
+                button.classList.remove('btn-success');
+                button.classList.add('btn-outline-success');
+            });
+
+            btn.classList.remove('btn-outline-success');
+            btn.classList.add('btn-success');
+
+            document.getElementById("paymentTerm").value = paymentTerm;
         }
         
         window.onload = function () {
