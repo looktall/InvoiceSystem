@@ -88,6 +88,16 @@
         .item-table .btn-danger {
             margin: 0; /* Remove default margin for the button */
         }
+
+        /* Set display to none */
+        .row-individual .row-company{
+            display: none;
+        }
+
+        /* Set display to block */
+        .row-individual.show .row-company.show {
+            display: block;
+        }
     </style>
 </head>
 
@@ -304,8 +314,8 @@
             content += '<tr><td><input type="hidden" name="vendorType" id="vendorType" value="0"></td></tr>';
             content += '<tr class="row-individual"><td>Vendor Name : </td><td><input id="vendorName" required class="form-control" type="text" /></td></tr>';
             content += '<tr class="row-individual"><td>NRIC : </td><td><input id="NRIC" required class="form-control" type="text" /></td></tr>';
-            content += '<tr class="row-company"><td>Company Name : </td><td><input id="companyName" required class="form-control" type="hidden" /></td></tr>';
-            content += '<tr class="row-company"><td>Company Registration NO : </td><td><input id="companyRegNo" required class="form-control" type="hidden" /></td></tr>';
+            content += '<tr class="row-company"><td>Company Name : </td><td><input id="companyName" required class="form-control" type="text" /></td></tr>';
+            content += '<tr class="row-company"><td>Company Registration NO : </td><td><input id="companyRegNo" required class="form-control" type="text" /></td></tr>';
 
             content += '<tr><td>Address : </td><td><textarea id="address" class="form-control" style="height:150px"></textarea></td></tr>';
             content += '<tr><td>Email : </td><td><input id="email" required class="form-control" type="text" /></td></tr>';
@@ -378,44 +388,44 @@
                 
                 if(response.data.vendor_type == 0)
                 {
-                    content += `<tr>
+                    content += `<tr class="row-individual show">
                                 <td>Vendor Name : </td>
                                 <td><input id="vendorName" required class="form-control" type="text" value="`+response.data.vendor_name+`"/></td>
-                                </tr>`;
+                            </tr>`;
 
-                    content += `<tr>
+                    content += `<tr class="row-individual show">
                                 <td>NRIC: </td>
-                                <td><input id="NRIC" required class="form-control" type="text" value="`+response.data.NRIC+`"/></td>
+                                <td><input id="NRIC" required class="form-control" type="text"  value="`+response.data.NRIC+`"/></td>
                                 </tr>`;
 
-                    content += `<tr>
-                                    <td>Company Name : </td>
-                                    <td><input id="companyName" required class="form-control" type="hidden" value="`+response.data.company_name+`"/></td>
-                                </tr>`;
-
-                    content += `<tr>
-                                    <td>Company Registration NO : </td>
-                                    <td><input id="companyRegNo" required class="form-control" type="hidden" value="`+response.data.company_reg_no+`"/></td>
-                                </tr>`;
-                }
-                else
-                {
-                    content += `<tr>
-                                <td>Vendor Name : </td>
-                                <td><input id="vendorName" required class="form-control" type="hidden" value="`+response.data.vendor_name+`"/></td>
-                                </tr>`;
-
-                    content += `<tr>
-                                <td>NRIC: </td>
-                                <td><input id="NRIC" required class="form-control" type="hidden"  value="`+response.data.NRIC+`"/></td>
-                                </tr>`;
-
-                    content += `<tr>
+                    content += `<tr class="row-company">
                                     <td>Company Name : </td>
                                     <td><input id="companyName" required class="form-control" type="text"  value="`+response.data.company_name+`"/></td>
                                 </tr>`;
 
-                    content += `<tr>
+                    content += `<tr class="row-company">
+                                    <td>Company Registration NO : </td>
+                                    <td><input id="companyRegNo" required class="form-control" type="text"  value="`+response.data.company_reg_no+`"/></td>
+                                </tr>`;
+                }
+                else
+                {
+                    content += `<tr class="row-individual">
+                                <td>Vendor Name : </td>
+                                <td><input id="vendorName" required class="form-control" type="text" value="`+response.data.vendor_name+`"/></td>
+                            </tr>`;
+
+                    content += `<tr class="row-individual">
+                                <td>NRIC: </td>
+                                <td><input id="NRIC" required class="form-control" type="text"  value="`+response.data.NRIC+`"/></td>
+                                </tr>`;
+
+                    content += `<tr class="row-company show">
+                                    <td>Company Name : </td>
+                                    <td><input id="companyName" required class="form-control" type="text"  value="`+response.data.company_name+`"/></td>
+                                </tr>`;
+
+                    content += `<tr class="row-company show">
                                     <td>Company Registration NO : </td>
                                     <td><input id="companyRegNo" required class="form-control" type="text"  value="`+response.data.company_reg_no+`"/></td>
                                 </tr>`;
@@ -1003,28 +1013,32 @@
 
             document.getElementById("vendorType").value = vendorType;
 
-            var individualRows = document.getElementsByClassName("row-individual");
-            var companyRows = document.getElementsByClassName("row-company");
+            var rowIndividual = document.querySelectorAll('.row-individual');
+            var rowCompany = document.querySelectorAll('.row-company');
 
             switch(vendorType)
             {
                 case 0:
-                    individualRows.forEach(function (row) {
-                        row.childNodes[0].type = "text";
+                
+                    rowIndividual.forEach(function (row) {
+                        row.classList.add('show');
                     });
 
-                    companyRows.forEach(function (row) {
-                        row.childNodes[0].type = "hidden";
+                    rowCompany.forEach(function (row) {
+                        row.classList.remove('show');
                     });
+
                     break;
                 case 1:
-                    individualRows.forEach(function (row) {
-                        row.childNodes[0].type = "hidden";
+
+                    rowIndividual.forEach(function (row) {
+                        row.classList.remove('show');
                     });
 
-                    companyRows.forEach(function (row) {
-                        row.childNodes[0].type = "text";
+                    rowCompany.forEach(function (row) {
+                        row.classList.add('show');
                     });
+
                     break;
             }
         }
