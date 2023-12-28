@@ -90,12 +90,12 @@
         }
 
         /* Set display to none */
-        .row-individual .row-company{
+        .row-individual, .row-company{
             display: none;
         }
 
         /* Set display to block */
-        .row-individual.show .row-company.show {
+        .row-individual.show, .row-company.show {
             display: block;
         }
     </style>
@@ -147,7 +147,7 @@
 
      <!-- Modal -->
 
-    <div class="modal" tabindex="-1" role="dialog">
+    <div id="modal" class="modal" tabindex="-1" role="dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="hideModal()"></button>
@@ -305,17 +305,20 @@
 
             var content = "";
             content += '<table class="table table-sm table-borderless">';
+
             content += `<tr><td>
                 <div class="btn-group vendor" role="group">
                     <button type="button" class="btn btn-success" onclick="selectVendorType(this, 0)">Individual</button>
                     <button type="button" class="btn btn-outline-success" onclick="selectVendorType(this, 1)">Company</button>
                 </div>
-            </td></tr>`;
+                </td></tr>`;
+
             content += '<tr><td><input type="hidden" name="vendorType" id="vendorType" value="0"></td></tr>';
-            content += '<tr class="row-individual"><td>Vendor Name : </td><td><input id="vendorName" required class="form-control" type="text" /></td></tr>';
-            content += '<tr class="row-individual"><td>NRIC : </td><td><input id="NRIC" required class="form-control" type="text" /></td></tr>';
-            content += '<tr class="row-company"><td>Company Name : </td><td><input id="companyName" required class="form-control" type="text" /></td></tr>';
-            content += '<tr class="row-company"><td>Company Registration NO : </td><td><input id="companyRegNo" required class="form-control" type="text" /></td></tr>';
+
+            content += '<tr><td>Vendor Name : </td><td><input id="vendorName" class="form-control" type="text" /></td></tr>';
+            content += '<tr><td>NRIC : </td><td><input id="NRIC" class="form-control" type="text" /></td></tr>';
+            content += '<tr><td>Company Name : </td><td><input id="companyName" required class="form-control" type="text" /></td></tr>';
+            content += '<tr><td>Company Registration NO : </td><td><input id="companyRegNo" class="form-control" type="text" /></td></tr>';
 
             content += '<tr><td>Address : </td><td><textarea id="address" class="form-control" style="height:150px"></textarea></td></tr>';
             content += '<tr><td>Email : </td><td><input id="email" required class="form-control" type="text" /></td></tr>';
@@ -374,7 +377,7 @@
                 content += `<tr><td><div class="btn-group vendor" role="group">`
 
                 content += `</div></td></tr>`;
-                for(var i = 0; i < 3; i++)
+                for(var i = 0; i < 2; i++)
                 {
                     var option = [0, 1];
                     var optionName = ['Individual', 'Company'];
@@ -384,53 +387,30 @@
                     else
                         content += `<button type="button" class="btn btn-outline-success" onclick="selectVendorType(this, `+option[i]+`)">`+optionName[i]+`</button>`;
                 }
+
                 content += `<tr><td><input type="hidden" name="vendorType" id="vendorType" value="`+response.data.vendor_type+`"></td></tr>`;
                 
-                if(response.data.vendor_type == 0)
-                {
-                    content += `<tr class="row-individual show">
+                content += `<tr><div>
                                 <td>Vendor Name : </td>
-                                <td><input id="vendorName" required class="form-control" type="text" value="`+response.data.vendor_name+`"/></td>
-                            </tr>`;
+                                <td><input id="vendorName" required class="form-control" type="text" value="${response.data.vendor_name !== null ? response.data.vendor_name : ''}"/></td>
+                                
+                            </div></tr>`;
 
-                    content += `<tr class="row-individual show">
+                content += `<tr><div>
                                 <td>NRIC: </td>
-                                <td><input id="NRIC" required class="form-control" type="text"  value="`+response.data.NRIC+`"/></td>
-                                </tr>`;
+                                <td><input id="NRIC" required class="form-control" type="text" value="${response.data.NRIC !== null ? response.data.NRIC : ''}"/></td>
+                            </div></tr>`;
 
-                    content += `<tr class="row-company">
-                                    <td>Company Name : </td>
-                                    <td><input id="companyName" required class="form-control" type="text"  value="`+response.data.company_name+`"/></td>
-                                </tr>`;
+                content += `<tr><div>
+                                <td>Company Name : </td>
+                                <td><input id="companyName" required class="form-control" type="text" value="${response.data.company_name !== null ? response.data.company_name : ''}"/></td>
+                            </div></tr>`;
 
-                    content += `<tr class="row-company">
-                                    <td>Company Registration NO : </td>
-                                    <td><input id="companyRegNo" required class="form-control" type="text"  value="`+response.data.company_reg_no+`"/></td>
-                                </tr>`;
-                }
-                else
-                {
-                    content += `<tr class="row-individual">
-                                <td>Vendor Name : </td>
-                                <td><input id="vendorName" required class="form-control" type="text" value="`+response.data.vendor_name+`"/></td>
-                            </tr>`;
-
-                    content += `<tr class="row-individual">
-                                <td>NRIC: </td>
-                                <td><input id="NRIC" required class="form-control" type="text"  value="`+response.data.NRIC+`"/></td>
-                                </tr>`;
-
-                    content += `<tr class="row-company show">
-                                    <td>Company Name : </td>
-                                    <td><input id="companyName" required class="form-control" type="text"  value="`+response.data.company_name+`"/></td>
-                                </tr>`;
-
-                    content += `<tr class="row-company show">
-                                    <td>Company Registration NO : </td>
-                                    <td><input id="companyRegNo" required class="form-control" type="text"  value="`+response.data.company_reg_no+`"/></td>
-                                </tr>`;
-                }
-
+                content += `<tr><div>
+                                <td>Company Registration NO : </td>
+                                <td><input id="companyRegNo" required class="form-control" type="text" value="${response.data.company_reg_no !== null ? response.data.company_reg_no : ''}"/></td>
+                            </div></tr>`;
+                
                 content += `<tr>
                                 <td>Address : </td>
                                 <td><textarea id="address" class="form-control" style="height:150px">`+response.data.address+`</textarea></td>
@@ -445,8 +425,24 @@
                                 <td>Contact No : </td>
                                 <td><input id="contactNo" required class="form-control" type="text"  value="`+response.data.contact_no+`"/></td>
                             </tr>`;
+                
+                content += `<tr>
+                                <td>Bank Name : </td>
+                                <td><input id="bankName" required class="form-control" type="text"  value="`+response.data.bank_name+`"/></td>
+                            </tr>`;
+
+                content += `<tr>
+                                <td>Beneficiary Name : </td>
+                                <td><input id="beneficiaryName" required class="form-control" type="text"  value="`+response.data.beneficiary_name+`"/></td>
+                            </tr>`;
+
+                content += `<tr>
+                                <td>Account No : </td>
+                                <td><input id="accountNo" required class="form-control" type="text"  value="`+response.data.account_no+`"/></td>
+                            </tr>`;
 
                 content += `<tr><td>Payment Terms : </td><td><div class="btn-group payment-term" role="group">`
+
                 for(var i = 0; i < 3; i++)
                 {
                     var option = [14, 30, 60];
@@ -464,44 +460,77 @@
                 
                 content += `</table>`;
 
-                content += '<br><br>';
-                content += `<h5">Invoices from same vendor</h5>`;
-                content += `<div style="height: 100px; overflow-y: auto; margin-top: 10px;">`;
+                // content += '<br><br>';
+                // content += `<h5">Invoices from same vendor</h5>`;
+                // content += `<div style="height: 100px; overflow-y: auto; margin-top: 10px;">`;
 
-                content += `<div style="display: flex; justify-content: space-between; margin-bottom: 5px;">`;
-                content += `<button class="btn btn-outline-info" onclick="" style="width: 30%;">Invoice 1</button>`;
-                content += `<span style="width: 30%;">Status: Sent</span>`;
-                content += `<span style="width: 30%;">Issue Date: 2023-12-31</span>`;
-                content += `</div>`;
+                // content += `<div style="display: flex; justify-content: space-between; margin-bottom: 5px;">`;
+                // content += `<button class="btn btn-outline-info" onclick="" style="width: 30%;">Invoice 1</button>`;
+                // content += `<span style="width: 30%;">Status: Sent</span>`;
+                // content += `<span style="width: 30%;">Issue Date: 2023-12-31</span>`;
+                // content += `</div>`;
 
-                content += `<div style="display: flex; justify-content: space-between; margin-bottom: 5px;">`;
-                content += `<button class="btn btn-outline-success" onclick="" style="width: 30%;">Invoice 2</button>`;
-                content += `<span style="width: 30%;">Status: Verified</span>`;
-                content += `<span style="width: 30%;">Issue Date: 2023-12-15</span>`;
-                content += `</div>`;
+                // content += `<div style="display: flex; justify-content: space-between; margin-bottom: 5px;">`;
+                // content += `<button class="btn btn-outline-success" onclick="" style="width: 30%;">Invoice 2</button>`;
+                // content += `<span style="width: 30%;">Status: Verified</span>`;
+                // content += `<span style="width: 30%;">Issue Date: 2023-12-15</span>`;
+                // content += `</div>`;
 
-                content += `<div style="display: flex; justify-content: space-between; margin-bottom: 5px;">`;
-                content += `<button class="btn btn-outline-success" onclick="" style="width: 30%;">Invoice 2</button>`;
-                content += `<span style="width: 30%;">Status: Verified</span>`;
-                content += `<span style="width: 30%;">Issue Date: 2023-12-15</span>`;
-                content += `</div>`;
+                // content += `<div style="display: flex; justify-content: space-between; margin-bottom: 5px;">`;
+                // content += `<button class="btn btn-outline-success" onclick="" style="width: 30%;">Invoice 2</button>`;
+                // content += `<span style="width: 30%;">Status: Verified</span>`;
+                // content += `<span style="width: 30%;">Issue Date: 2023-12-15</span>`;
+                // content += `</div>`;
 
-                content += `<div style="display: flex; justify-content: space-between; margin-bottom: 5px;">`;
-                content += `<button class="btn btn-outline-success" onclick="" style="width: 30%;">Invoice 2</button>`;
-                content += `<span style="width: 30%;">Status: Verified</span>`;
-                content += `<span style="width: 30%;">Issue Date: 2023-12-15</span>`;
-                content += `</div>`;
+                // content += `<div style="display: flex; justify-content: space-between; margin-bottom: 5px;">`;
+                // content += `<button class="btn btn-outline-success" onclick="" style="width: 30%;">Invoice 2</button>`;
+                // content += `<span style="width: 30%;">Status: Verified</span>`;
+                // content += `<span style="width: 30%;">Issue Date: 2023-12-15</span>`;
+                // content += `</div>`;
 
-                content += `<div style="display: flex; justify-content: space-between; margin-bottom: 5px;">`;
-                content += `<button class="btn btn-outline-success" onclick="" style="width: 30%;">Invoice 2</button>`;
-                content += `<span style="width: 30%;">Status: Verified</span>`;
-                content += `<span style="width: 30%;">Issue Date: 2023-12-15</span>`;
-                content += `</div>`;
+                // content += `<div style="display: flex; justify-content: space-between; margin-bottom: 5px;">`;
+                // content += `<button class="btn btn-outline-success" onclick="" style="width: 30%;">Invoice 2</button>`;
+                // content += `<span style="width: 30%;">Status: Verified</span>`;
+                // content += `<span style="width: 30%;">Issue Date: 2023-12-15</span>`;
+                // content += `</div>`;
 
                 content += `</div>`;
 
                 editVendorModalMessage.innerHTML = content;
                 editVendorModal.style.display = 'block'; 
+
+                switch (response.data.vendor_type)
+                {
+                    case 0:
+                        // Show vendorName and NRIC, hide companyName and companyRegNo
+                        document.getElementById("vendorName").parentNode.parentNode.classList.add("d-table-row");
+                        document.getElementById("vendorName").parentNode.parentNode.classList.remove("d-none");
+
+                        document.getElementById("NRIC").parentNode.parentNode.classList.add("d-table-row");
+                        document.getElementById("NRIC").parentNode.parentNode.classList.remove("d-none");
+
+                        document.getElementById("companyName").parentNode.parentNode.classList.add("d-none");
+                        document.getElementById("companyName").parentNode.parentNode.classList.remove("d-table-row");
+
+                        document.getElementById("companyRegNo").parentNode.parentNode.classList.add("d-none");
+                        document.getElementById("companyRegNo").parentNode.parentNode.classList.remove("d-table-row");
+                        break;
+
+                    case 1:
+                        // Hide vendorName and NRIC, show companyName and companyRegNo
+                        document.getElementById("vendorName").parentNode.parentNode.classList.add("d-none");
+                        document.getElementById("vendorName").parentNode.parentNode.classList.remove("d-table-row");
+
+                        document.getElementById("NRIC").parentNode.parentNode.classList.add("d-none");
+                        document.getElementById("NRIC").parentNode.parentNode.classList.remove("d-table-row");
+
+                        document.getElementById("companyName").parentNode.parentNode.classList.add("d-table-row");
+                        document.getElementById("companyName").parentNode.parentNode.classList.remove("d-none");
+
+                        document.getElementById("companyRegNo").parentNode.parentNode.classList.add("d-table-row");
+                        document.getElementById("companyRegNo").parentNode.parentNode.classList.remove("d-none");
+                        break;
+                }
             });
         }
 
@@ -1013,32 +1042,36 @@
 
             document.getElementById("vendorType").value = vendorType;
 
-            var rowIndividual = document.querySelectorAll('.row-individual');
-            var rowCompany = document.querySelectorAll('.row-company');
-
             switch(vendorType)
             {
                 case 0:
-                
-                    rowIndividual.forEach(function (row) {
-                        row.classList.add('show');
-                    });
+                    // Show vendorName and NRIC, hide companyName and companyRegNo
+                    document.getElementById("vendorName").parentNode.parentNode.classList.add("d-table-row");
+                    document.getElementById("vendorName").parentNode.parentNode.classList.remove("d-none");
 
-                    rowCompany.forEach(function (row) {
-                        row.classList.remove('show');
-                    });
+                    document.getElementById("NRIC").parentNode.parentNode.classList.add("d-table-row");
+                    document.getElementById("NRIC").parentNode.parentNode.classList.remove("d-none");
 
+                    document.getElementById("companyName").parentNode.parentNode.classList.add("d-none");
+                    document.getElementById("companyName").parentNode.parentNode.classList.remove("d-table-row");
+
+                    document.getElementById("companyRegNo").parentNode.parentNode.classList.add("d-none");
+                    document.getElementById("companyRegNo").parentNode.parentNode.classList.remove("d-table-row");
                     break;
+
                 case 1:
+                    // Hide vendorName and NRIC, show companyName and companyRegNo
+                    document.getElementById("vendorName").parentNode.parentNode.classList.add("d-none");
+                    document.getElementById("vendorName").parentNode.parentNode.classList.remove("d-table-row");
 
-                    rowIndividual.forEach(function (row) {
-                        row.classList.remove('show');
-                    });
+                    document.getElementById("NRIC").parentNode.parentNode.classList.add("d-none");
+                    document.getElementById("NRIC").parentNode.parentNode.classList.remove("d-table-row");
 
-                    rowCompany.forEach(function (row) {
-                        row.classList.add('show');
-                    });
+                    document.getElementById("companyName").parentNode.parentNode.classList.add("d-table-row");
+                    document.getElementById("companyName").parentNode.parentNode.classList.remove("d-none");
 
+                    document.getElementById("companyRegNo").parentNode.parentNode.classList.add("d-table-row");
+                    document.getElementById("companyRegNo").parentNode.parentNode.classList.remove("d-none");
                     break;
             }
         }
