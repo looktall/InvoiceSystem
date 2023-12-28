@@ -316,7 +316,7 @@
             content += '<tr><td><input type="hidden" name="vendorType" id="vendorType" value="0"></td></tr>';
 
             content += '<tr><td>Vendor Name : </td><td><input id="vendorName" class="form-control" type="text" /></td></tr>';
-            content += '<tr><td>NRIC : </td><td><input id="NRIC" class="form-control" type="text" /></td></tr>';
+            content += '<tr><td>NRIC : </td><td><input id="icNumber" class="form-control" type="text" /></td></tr>';
             content += '<tr><td>Company Name : </td><td><input id="companyName" required class="form-control" type="text" /></td></tr>';
             content += '<tr><td>Company Registration NO : </td><td><input id="companyRegNo" class="form-control" type="text" /></td></tr>';
 
@@ -373,10 +373,10 @@
             .then(response => {
 
                 var content = "";
-                content += '<table class="table table-sm table-borderless">';
-                content += `<tr><td><div class="btn-group vendor" role="group">`
 
-                content += `</div></td></tr>`;
+                content += '<table class="table table-sm table-borderless">';
+
+                content += `<tr><td><div class="btn-group vendor" role="group">`
                 for(var i = 0; i < 2; i++)
                 {
                     var option = [0, 1];
@@ -387,7 +387,9 @@
                     else
                         content += `<button type="button" class="btn btn-outline-success" onclick="selectVendorType(this, `+option[i]+`)">`+optionName[i]+`</button>`;
                 }
+                content += `</div></td></tr>`;
 
+                content += `<tr><td><input type="hidden" name="vendorId" id="vendorId" value="`+response.data.id+`"></td></tr>`;
                 content += `<tr><td><input type="hidden" name="vendorType" id="vendorType" value="`+response.data.vendor_type+`"></td></tr>`;
                 
                 content += `<tr><div>
@@ -398,7 +400,7 @@
 
                 content += `<tr><div>
                                 <td>NRIC: </td>
-                                <td><input id="NRIC" required class="form-control" type="text" value="${response.data.NRIC !== null ? response.data.NRIC : ''}"/></td>
+                                <td><input id="icNumber" required class="form-control" type="text" value="${response.data.ic_number !== null ? response.data.ic_number : ''}"/></td>
                             </div></tr>`;
 
                 content += `<tr><div>
@@ -506,8 +508,8 @@
                         document.getElementById("vendorName").parentNode.parentNode.classList.add("d-table-row");
                         document.getElementById("vendorName").parentNode.parentNode.classList.remove("d-none");
 
-                        document.getElementById("NRIC").parentNode.parentNode.classList.add("d-table-row");
-                        document.getElementById("NRIC").parentNode.parentNode.classList.remove("d-none");
+                        document.getElementById("icNumber").parentNode.parentNode.classList.add("d-table-row");
+                        document.getElementById("icNumber").parentNode.parentNode.classList.remove("d-none");
 
                         document.getElementById("companyName").parentNode.parentNode.classList.add("d-none");
                         document.getElementById("companyName").parentNode.parentNode.classList.remove("d-table-row");
@@ -521,8 +523,8 @@
                         document.getElementById("vendorName").parentNode.parentNode.classList.add("d-none");
                         document.getElementById("vendorName").parentNode.parentNode.classList.remove("d-table-row");
 
-                        document.getElementById("NRIC").parentNode.parentNode.classList.add("d-none");
-                        document.getElementById("NRIC").parentNode.parentNode.classList.remove("d-table-row");
+                        document.getElementById("icNumber").parentNode.parentNode.classList.add("d-none");
+                        document.getElementById("icNumber").parentNode.parentNode.classList.remove("d-table-row");
 
                         document.getElementById("companyName").parentNode.parentNode.classList.add("d-table-row");
                         document.getElementById("companyName").parentNode.parentNode.classList.remove("d-none");
@@ -550,6 +552,7 @@
 
                 var content = "";
                 content += '<table class="table table-sm table-borderless">';
+                content += '<tr><td><input id="invoiceId" class="form-control" type="hidden" value="'+id+'" /></td></tr>';
                 content += '<tr><td>Recipient : </td><td><input id="recipient" disabled class="form-control" type="text" />'+recipientName+'</td></tr>';
                 content += `<tr>`;
                 content += `<table class="item-table" id="itemTable">`;
@@ -954,45 +957,44 @@
             }
         }
 
-        function saveVendor(vendorId = null) {
+        function saveVendor() {
             
             var vendorData = {
                 vendorName: document.getElementById("vendorName").value || "",
                 companyName: document.getElementById("companyName").value || "",
                 vendorType: document.getElementById("vendorType").value || "",
-                NRIC: document.getElementById("NRIC").value || "",
-                company_reg_no: document.getElementById("companyRegNo").value || "",
+                icNumber: document.getElementById("icNumber").value || "",
+                companyRegNo: document.getElementById("companyRegNo").value || "",
                 address: document.getElementById("address").value || "",
                 email: document.getElementById("email").value || "",
                 contactNo: document.getElementById("contactNo").value || "",
-                payment_term: document.getElementById("paymentTerm").value || "",
-                bank_name: document.getElementById("bankName").value || "",
-                beneficiary_name: document.getElementById("beneficiaryName").value || "",
-                account_no: document.getElementById("accountNo").value || ""
+                paymentTerm: document.getElementById("paymentTerm").value || "",
+                bankName: document.getElementById("bankName").value || "",
+                beneficiaryName: document.getElementById("beneficiaryName").value || "",
+                accountNo: document.getElementById("accountNo").value || "",
+                vendorId: document.getElementById("vendorId") ? document.getElementById("vendorId").value : ""
             };
 
             let url = "";
 
-            if(vendorId != null)
-            {
+            if(document.getElementById("vendorId") != null)
                 url = "https://invoice-system-api.onrender.com/vendor/edit/";
-                vendorData.vendorId = vendorId;
-            }
+
             else
                 url = "https://invoice-system-api.onrender.com/vendor/create/";
                 
+            alert(JSON.stringify(vendorData));
 
-            axios.post("https://invoice-system-api.onrender.com/vendor/create/", vendorData,
+            axios.post(url, vendorData,
             {headers: { authorization: `Bearer ${token}` }})
-                .then(response => {
-                    alert(vendorData);
-                    showModal("Update Success");
-                });
+            .then(response => {
+                showModal("Update Success");
+            });
         }
 
         function saveInvoice() {
             var table = document.getElementById("itemTable");
-            var jsonData = [];
+            var invoiceData = [];
 
             for (var i = 1; i < table.rows.length - 1; i++) { // Start from 1 to skip header and end before the last row (Add Row button)
                 var row = table.rows[i];
@@ -1001,7 +1003,7 @@
                 var unitPrice = parseFloat(row.cells[2].getElementsByTagName("input")[0].value) || 0;
                 var subtotal = parseFloat(row.cells[3].getElementsByTagName("input")[0].value) || 0;
 
-                jsonData.push({
+                invoiceData.push({
                     item: item,
                     quantity: quantity,
                     unitPrice: unitPrice,
@@ -1012,16 +1014,26 @@
             var total = parseFloat(document.getElementById("total").value) || 0;
 
             // Add total to the JSON data
-            jsonData.push({
+            invoiceData.push({
                 total: total
             });
 
             // Convert the JSON data to a string
-            var jsonString = JSON.stringify(jsonData, null, 2);
+            var jsonString = JSON.stringify(invoiceData, null, 2);
 
-            // Log or use the jsonString as needed
-            console.log(jsonString);
-            alert(jsonString);
+            let url = "";
+
+            if(document.getElementById("invoiceId") != null)
+                url = "https://invoice-system-api.onrender.com/invoice/edit/";
+
+            else
+                url = "https://invoice-system-api.onrender.com/invoice/create/";
+
+            axios.post(url, jsonString,
+            {headers: { authorization: `Bearer ${token}` }})
+            .then(response => {
+                showModal("Update Success");
+            });
         }
 
         function CheckNull()
@@ -1049,8 +1061,8 @@
                     document.getElementById("vendorName").parentNode.parentNode.classList.add("d-table-row");
                     document.getElementById("vendorName").parentNode.parentNode.classList.remove("d-none");
 
-                    document.getElementById("NRIC").parentNode.parentNode.classList.add("d-table-row");
-                    document.getElementById("NRIC").parentNode.parentNode.classList.remove("d-none");
+                    document.getElementById("icNumber").parentNode.parentNode.classList.add("d-table-row");
+                    document.getElementById("icNumber").parentNode.parentNode.classList.remove("d-none");
 
                     document.getElementById("companyName").parentNode.parentNode.classList.add("d-none");
                     document.getElementById("companyName").parentNode.parentNode.classList.remove("d-table-row");
@@ -1064,8 +1076,8 @@
                     document.getElementById("vendorName").parentNode.parentNode.classList.add("d-none");
                     document.getElementById("vendorName").parentNode.parentNode.classList.remove("d-table-row");
 
-                    document.getElementById("NRIC").parentNode.parentNode.classList.add("d-none");
-                    document.getElementById("NRIC").parentNode.parentNode.classList.remove("d-table-row");
+                    document.getElementById("icNumber").parentNode.parentNode.classList.add("d-none");
+                    document.getElementById("icNumber").parentNode.parentNode.classList.remove("d-table-row");
 
                     document.getElementById("companyName").parentNode.parentNode.classList.add("d-table-row");
                     document.getElementById("companyName").parentNode.parentNode.classList.remove("d-none");
